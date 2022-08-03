@@ -166,6 +166,10 @@
     &--error-message {
         padding: 0 2.4rem;
     }
+
+    & .dc-mobile-full-page-modal__header {
+        border-bottom: 2px solid var(--general-section-1);
+    }
 }
 
 .buy-sell__modal-content {
