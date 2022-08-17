@@ -8,13 +8,21 @@ import { localize } from 'Components/i18next';
 import '../block-user.scss';
 
 const BlockUserRow = ({ row: advertiser }) => {
-    const { my_profile_store } = useStores();
+    const { buy_sell_store, general_store, my_profile_store } = useStores();
+
+    const navigateToAdvertiserPage = () => {
+        general_store.setActiveIndex(0);
+        buy_sell_store.showAdvertiserPage({
+            advertiser_details: advertiser,
+        });
+    };
+
     return (
         <Table.Row className='block-user__row'>
             <Table.Cell>
                 <div className='block-user__row-cell'>
                     <UserAvatar nickname={advertiser.name} size={32} text_size='s' />
-                    <div className='block-user__row-cell--container'>
+                    <div className='block-user__row-cell--container' onClick={navigateToAdvertiserPage}>
                         <Text size='xs' line_height='m' color='general'>
                             {advertiser.name}
                         </Text>
