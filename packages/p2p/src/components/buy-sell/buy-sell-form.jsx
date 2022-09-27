@@ -33,6 +33,7 @@ const BuySellForm = props => {
         rate,
         rate_type,
     } = buy_sell_store?.advert || {};
+    console.log('ADVERT', buy_sell_store.advert);
     const [input_amount, setInputAmount] = React.useState(min_order_amount_limit);
 
     const should_disable_field =

@@ -21,6 +21,8 @@ import NicknameForm from '../nickname-form';
 import 'Components/buy-sell/buy-sell-modal.scss';
 import AddPaymentMethodForm from '../my-profile/payment-methods/add-payment-method/add-payment-method-form.jsx';
 import { api_error_codes } from 'Constants/api-error-codes';
+import { CANCEL_ADD_PAYMENT_METHOD_MODAL } from 'Components/modals/modal-id.js';
+import { reaction } from 'mobx';
 
 const LowBalanceMessage = () => (
     <div className='buy-sell__modal--error-message'>
@@ -58,7 +60,10 @@ BuySellModalFooter.propTypes = {
     onSubmit: PropTypes.func.isRequired,
 };
 
+// TODO: Refactor this passing my_profile_store as arguments to useStores!
 const generateModalTitle = (formik_ref, my_profile_store, table_type, selected_ad) => {
+    const { modal_store } = useStores();
+
     if (my_profile_store.should_show_add_payment_method_form) {
         if (!isMobile()) {
             return (
@@ -67,7 +72,8 @@ const generateModalTitle = (formik_ref, my_profile_store, table_type, selected_a
                         icon='IcArrowLeftBold'
                         onClick={() => {
                             if (formik_ref.current.dirty) {
-                                my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
+                                modal_store.showModal(CANCEL_ADD_PAYMENT_METHOD_MODAL);
+                                // my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
                             } else {
                                 my_profile_store.setShouldShowAddPaymentMethodForm(false);
                             }
@@ -87,7 +93,9 @@ const generateModalTitle = (formik_ref, my_profile_store, table_type, selected_a
 };
 
 const BuySellModal = ({ table_type, selected_ad, should_show_popup, setShouldShowPopup }) => {
-    const { buy_sell_store, floating_rate_store, general_store, my_profile_store, order_store } = useStores();
+    console.log('PROPS', table_type, selected_ad, setShouldShowPopup);
+    const { buy_sell_store, floating_rate_store, general_store, modal_store, my_profile_store, order_store } =
+        useStores();
     const submitForm = React.useRef(() => {});
     const [error_message, setErrorMessage] = useSafeState(null);
     const [is_submit_disabled, setIsSubmitDisabled] = useSafeState(true);
@@ -123,7 +131,8 @@ const BuySellModal = ({ table_type, selected_ad, should_show_popup, setShouldSho
     const onCancel = () => {
         if (my_profile_store.should_show_add_payment_method_form) {
             if (formik_ref.current.dirty) {
-                my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
+                modal_store.showModal(CANCEL_ADD_PAYMENT_METHOD_MODAL);
+                // my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
             } else {
                 my_profile_store.hideAddPaymentMethodForm();
             }
@@ -144,20 +153,40 @@ const BuySellModal = ({ table_type, selected_ad, should_show_popup, setShouldSho
     const setSubmitForm = submitFormFn => (submitForm.current = submitFormFn);
 
     React.useEffect(() => {
-        const balance_check =
-            parseFloat(general_store.balance) === 0 ||
-            parseFloat(general_store.balance) < buy_sell_store.advert?.min_order_amount_limit;
+        return reaction(
+            () => modal_store.is_modal_open,
+            () => {
+                const balance_check =
+                    parseFloat(general_store.balance) === 0 ||
+                    parseFloat(general_store.balance) < buy_sell_store.advert?.min_order_amount_limit;
 
-        setIsAccountBalanceLow(balance_check);
-        if (!should_show_popup) {
-            setErrorMessage(null);
-        }
+                setIsAccountBalanceLow(balance_check);
+                if (!modal_store.is_modal_open) {
+                    setErrorMessage(null);
+                }
 
-        my_profile_store.setSelectedPaymentMethod('');
-        my_profile_store.setSelectedPaymentMethodDisplayName('');
+                my_profile_store.setSelectedPaymentMethod('');
+                my_profile_store.setSelectedPaymentMethodDisplayName('');
+            },
+            { fireImmediately: true }
+        );
+    }, []);
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [should_show_popup]);
+    // React.useEffect(() => {
+    //     const balance_check =
+    //         parseFloat(general_store.balance) === 0 ||
+    //         parseFloat(general_store.balance) < buy_sell_store.advert?.min_order_amount_limit;
+
+    //     setIsAccountBalanceLow(balance_check);
+    //     if (!should_show_popup) {
+    //         setErrorMessage(null);
+    //     }
+
+    //     my_profile_store.setSelectedPaymentMethod('');
+    //     my_profile_store.setSelectedPaymentMethodDisplayName('');
+
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [should_show_popup]);
 
     const Form = general_store.nickname ? BuySellForm : NicknameForm;
 
@@ -168,7 +197,7 @@ const BuySellModal = ({ table_type, selected_ad, should_show_popup, setShouldSho
                 className='buy-sell__modal'
                 height_offset='80px'
                 is_flex
-                is_modal_open={should_show_popup}
+                is_modal_open={modal_store.is_modal_open}
                 page_header_className='buy-sell__modal-header'
                 page_header_text={generateModalTitle(formik_ref, my_profile_store, table_type, selected_ad)}
                 pageHeaderReturnFn={onCancel}
@@ -206,13 +235,13 @@ const BuySellModal = ({ table_type, selected_ad, should_show_popup, setShouldSho
             </MobileFullPageModal>
         );
     }
-    if (should_show_popup) {
+    if (modal_store.is_modal_open) {
         return (
             <Modal
                 className='buy-sell__modal'
                 height={table_type === buy_sell.BUY ? 'auto' : '649px'}
                 width='456px'
-                is_open={should_show_popup}
+                is_open={modal_store.is_modal_open}
                 title={generateModalTitle(formik_ref, my_profile_store, table_type, selected_ad)}
                 portalId={general_store.props.modal_root_id}
                 toggleModal={onCancel}

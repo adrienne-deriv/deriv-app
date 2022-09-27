@@ -7,42 +7,12 @@ import { Localize } from 'Components/i18next';
 import { reaction } from 'mobx';
 
 const CancelAddPaymentMethodModal = ({ is_floating }) => {
-    const { my_profile_store, my_ads_store, general_store } = useStores();
-
-    // TODO: Refactor this code to avoid manual DOM updates
-    // mounts the modal in a seperate modal-root container to show/float the modal over another modal if is_floating is true
-    React.useLayoutEffect(() => {
-        const disposeFloatingWrapper = reaction(
-            () => my_profile_store.is_cancel_add_payment_method_modal_open,
-            is_open => {
-                let wrapper = document.getElementById('cancel_modal_root');
-                if (is_open) {
-                    if (!wrapper) {
-                        wrapper = document.createElement('div');
-                        wrapper.setAttribute('id', 'cancel_modal_root');
-                    }
-                    if (is_floating) {
-                        wrapper.classList.add('modal-root');
-                        document.body.appendChild(wrapper);
-                    }
-                } else if (wrapper) {
-                    document.body.removeChild(wrapper);
-                }
-            }
-        );
-
-        return () => {
-            disposeFloatingWrapper();
-            my_profile_store.setSelectedPaymentMethod('');
-            my_profile_store.setSelectedPaymentMethodDisplayName('');
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const { my_profile_store, modal_store, my_ads_store, general_store } = useStores();
 
     return (
         <Modal
             has_close_icon={false}
-            is_open={general_store.is_modal_open}
+            is_open={modal_store.is_modal_open}
             small
             title={
                 <Text color='prominent' size='s' weight='bold'>

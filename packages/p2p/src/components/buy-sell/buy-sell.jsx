@@ -2,6 +2,7 @@ import React from 'react';
 import { useSafeState } from '@deriv/components';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react-lite';
+import { observable } from 'mobx';
 import { localize } from 'Components/i18next';
 import PageReturn from 'Components/page-return/page-return.jsx';
 import Verification from 'Components/verification/verification.jsx';
@@ -9,15 +10,44 @@ import RateChangeModal from 'Components/buy-sell/rate-change-modal.jsx';
 import { buy_sell } from 'Constants/buy-sell';
 import { useStores } from 'Stores';
 import BuySellHeader from './buy-sell-header.jsx';
-import BuySellModal from './buy-sell-modal.jsx';
+// import BuySellModal from './buy-sell-modal.jsx';
 import BuySellTable from './buy-sell-table.jsx';
 import FilterModal from './filter-modal';
 import './buy-sell.scss';
+import { useModalManager } from 'Components/modals/modal-manager';
+import { BUY_SELL_MODAL } from '../modals/modal-id.js';
 
 const BuySell = () => {
-    const { buy_sell_store } = useStores();
+    const { buy_sell_store, modal_store } = useStores();
     const [is_toggle_visible, setIsToggleVisible] = useSafeState(true);
     const previous_scroll_top = React.useRef(0);
+    // Q: Will passing observables through arguments/objects be observed later?
+    // useModalManager({
+    //     id: BUY_SELL_MODAL,
+    //     props: observable.object({
+    //         selected_ad: () => buy_sell_store.selected_ad_state,
+    //         // should_show_popup: modal_store.is_modal_open,
+    //         // setShouldShowPopup: should_show_popup => {
+    //         //     if (should_show_popup) {
+    //         //         modal_store.showModal(BUY_SELL_MODAL);
+    //         //     } else {
+    //         //         modal_store.hideModal(BUY_SELL_MODAL);
+    //         //     }
+    //         // },
+    //         table_type: () => buy_sell_store.table_type,
+    //     }),
+    // });
+    modal_store.setProps({
+        selected_ad: buy_sell_store.selected_ad_state,
+        table_type: buy_sell_store.table_type,
+        setShouldShowPopup: should_show_popup => {
+            if (should_show_popup) {
+                modal_store.showModal(BUY_SELL_MODAL);
+            } else {
+                modal_store.hideModal(BUY_SELL_MODAL);
+            }
+        },
+    });
 
     React.useEffect(() => {
         const disposeIsListedReaction = buy_sell_store.registerIsListedReaction();
@@ -65,12 +95,12 @@ const BuySell = () => {
                 showAdvertiserPage={buy_sell_store.showAdvertiserPage}
                 onScroll={onScroll}
             />
-            <BuySellModal
+            {/* <BuySellModal
                 selected_ad={buy_sell_store.selected_ad_state}
                 should_show_popup={buy_sell_store.should_show_popup}
                 setShouldShowPopup={buy_sell_store.setShouldShowPopup}
                 table_type={buy_sell_store.table_type}
-            />
+            /> */}
             <RateChangeModal onMount={buy_sell_store.setShouldShowPopup} />
         </div>
     );
