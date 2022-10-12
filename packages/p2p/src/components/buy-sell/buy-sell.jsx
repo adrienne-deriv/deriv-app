@@ -2,6 +2,7 @@ import React from 'react';
 import { useSafeState } from '@deriv/components';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react-lite';
+import { computed } from 'mobx';
 import { localize } from 'Components/i18next';
 import PageReturn from 'Components/page-return/page-return.jsx';
 import Verification from 'Components/verification/verification.jsx';
@@ -13,15 +14,52 @@ import BuySellModal from './buy-sell-modal.jsx';
 import BuySellTable from './buy-sell-table.jsx';
 import FilterModal from './filter-modal';
 import './buy-sell.scss';
+import { isEqual } from 'lodash';
+import { useEffect } from 'react';
+
+const usePrevious = value => {
+    const ref = React.useRef();
+    React.useEffect(() => {
+        ref.current = value;
+    });
+    return ref.current;
+};
+
+const useModalProps = (modal_id, modal_props) => {
+    const { modal_store } = useStores();
+
+    const previousModalProps = usePrevious(modal_props);
+
+    React.useEffect(() => {
+        if (previousModalProps && !isEqual(previousModalProps, modal_props)) {
+            modal_store.passModalProps(modal_id, modal_props);
+        }
+    }, [modal_props]);
+};
 
 const BuySell = () => {
-    const { buy_sell_store } = useStores();
+    const { buy_sell_store, modal_store } = useStores();
     const [is_toggle_visible, setIsToggleVisible] = useSafeState(true);
     const previous_scroll_top = React.useRef(0);
+
+    useModalProps('BuySellModal', {
+        selected_ad: buy_sell_store.selected_ad_state,
+        should_show_popup: modal_store.is_modal_open,
+        setShouldShowPopup: should_show_modal =>
+            should_show_modal ? modal_store.showModal('BuySellModal') : modal_store.hideModal(),
+        table_type: buy_sell_store.table_type,
+    });
 
     React.useEffect(() => {
         const disposeIsListedReaction = buy_sell_store.registerIsListedReaction();
         const disposeAdvertIntervalReaction = buy_sell_store.registerAdvertIntervalReaction();
+
+        // useModalProps('BuySellModal', {
+        //     selected_ad: buy_sell_store.selected_ad_state,
+        //     should_show_popup: modal_store.is_modal_open,
+        //     setShouldShowPopup: buy_sell_store.setShouldShowPopup,
+        //     table_type: buy_sell_store.table_type,
+        // });
 
         return () => {
             disposeIsListedReaction();
@@ -61,12 +99,12 @@ const BuySell = () => {
                 showAdvertiserPage={buy_sell_store.showAdvertiserPage}
                 onScroll={onScroll}
             />
-            <BuySellModal
+            {/* <BuySellModal
                 selected_ad={buy_sell_store.selected_ad_state}
                 should_show_popup={buy_sell_store.should_show_popup}
                 setShouldShowPopup={buy_sell_store.setShouldShowPopup}
                 table_type={buy_sell_store.table_type}
-            />
+            /> */}
             <RateChangeModal onMount={buy_sell_store.setShouldShowPopup} />
         </div>
     );
