@@ -8,6 +8,7 @@ import { waitWS } from 'Utils/websocket';
 import { useStores } from 'Stores';
 import AppContent from './app-content.jsx';
 import { setLanguage } from './i18next';
+import { ModalManager } from 'Components/modal-manager';
 import './app.scss';
 
 const App = props => {
@@ -100,6 +101,7 @@ const App = props => {
 
     return (
         <main className={classNames('p2p-cashier', className)}>
+            <ModalManager />
             <Notifications />
             <AppContent />
         </main>
