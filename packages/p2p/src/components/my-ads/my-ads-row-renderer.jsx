@@ -13,7 +13,7 @@ import { generateEffectiveRate } from 'Utils/format-value';
 import AdType from './ad-type.jsx';
 
 const MyAdsRowRenderer = observer(({ row: advert, setAdvert }) => {
-    const { floating_rate_store, general_store, my_ads_store, my_profile_store } = useStores();
+    const { floating_rate_store, general_store, modal_store, my_ads_store, my_profile_store } = useStores();
 
     const {
         account_currency,
@@ -63,7 +63,8 @@ const MyAdsRowRenderer = observer(({ row: advert, setAdvert }) => {
     const onClickAdd = () => {
         if (general_store.is_listed && !general_store.is_barred) {
             setAdvert(advert);
-            my_ads_store.showQuickAddModal(advert);
+            // my_ads_store.showQuickAddModal(advert);
+            modal_store.showModal('QuickAddModal');
         }
     };
     const onClickDelete = () => !general_store.is_barred && my_ads_store.onClickDelete(id);

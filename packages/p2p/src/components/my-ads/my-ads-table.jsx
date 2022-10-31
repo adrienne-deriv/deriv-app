@@ -13,8 +13,9 @@ import { generateErrorDialogTitle } from 'Utils/adverts';
 import MyAdsDeleteModal from './my-ads-delete-modal.jsx';
 import MyAdsFloatingRateSwitchModal from './my-ads-floating-rate-switch-modal.jsx';
 import MyAdsRowRenderer from './my-ads-row-renderer.jsx';
-import QuickAddModal from './quick-add-modal.jsx';
+// import QuickAddModal from './quick-add-modal.jsx';
 import AdExceedsDailyLimitModal from './ad-exceeds-daily-limit-modal.jsx';
+import { useStateWithModal } from 'Components/modal-manager';
 
 const getHeaders = offered_currency => [
     { text: localize('Ad ID') },
@@ -52,7 +53,9 @@ const AdSwitchHintBox = () => {
 
 const MyAdsTable = () => {
     const { floating_rate_store, general_store, my_ads_store } = useStores();
-    const [selected_advert, setSelectedAdvert] = React.useState(undefined);
+    const [selected_advert, setSelectedAdvert] = useStateWithModal(undefined)({
+        advert: 'QuickAddModal',
+    });
 
     React.useEffect(() => {
         my_ads_store.setAdverts([]);
@@ -77,7 +80,7 @@ const MyAdsTable = () => {
     if (my_ads_store.adverts.length) {
         return (
             <React.Fragment>
-                {selected_advert && <QuickAddModal advert={selected_advert} />}
+                {/* {selected_advert && <QuickAddModal advert={selected_advert} />} */}
                 {floating_rate_store.change_ad_alert && (
                     <div className='p2p-my-ads__warning'>
                         <HintBox

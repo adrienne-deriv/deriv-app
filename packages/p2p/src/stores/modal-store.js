@@ -7,7 +7,8 @@ export default class ModalStore extends BaseStore {
     @observable is_modal_open = false;
     @observable modal_history = null;
     @observable previous_modal = '';
-    @observable modal_props = new Map();
+
+    modal_props = observable.map(new Map());
     should_switch_modal = false;
     MODAL_TRANSITION_DELAY = 300;
 
@@ -15,6 +16,7 @@ export default class ModalStore extends BaseStore {
     get props() {
         return this.modal_props.get(this.current_modal);
     }
+
     @action.bound
     onMount() {
         // only this reaction can modify is_modal_open and modal_id, NO ONE ELSE CAN DO IT!
@@ -32,6 +34,7 @@ export default class ModalStore extends BaseStore {
                 } else {
                     if (this.should_switch_modal) {
                     } else {
+                        console.log('here?', this.current_modal);
                         this.setModalId(this.current_modal);
                         this.setIsModalOpen(true);
                     }
@@ -59,7 +62,15 @@ export default class ModalStore extends BaseStore {
 
     @action.bound
     passModalProps(modal_id, modal_props) {
-        this.modal_props.set(modal_id, modal_props);
+        if (this.modal_props.has(modal_id)) {
+            let prop = this.modal_props.get(modal_id);
+            this.modal_props.set(modal_id, {
+                ...prop,
+                ...modal_props,
+            });
+        } else {
+            this.modal_props.set(modal_id, modal_props);
+        }
     }
 
     @action.bound
@@ -69,6 +80,7 @@ export default class ModalStore extends BaseStore {
 
     @action.bound
     showModal(modal_id) {
+        console.log('showing', modal_id);
         // case 1: there is a current modal being shown, and they want to show another modal
         if (this.current_modal) {
             this.should_switch_modal = true;
