@@ -2,9 +2,6 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { reaction } from 'mobx';
 import { useStores } from 'Stores';
-import { moduleLoader } from '@deriv/shared';
-import QuickAddModal from './modals/quick-add-modal.jsx';
-import BuySellModal from './modals/buy-sell-modal.jsx';
 
 export const useStateWithModal = defaultState => {
     const { modal_store } = useStores();
@@ -38,6 +35,7 @@ export const useStateWithModal = defaultState => {
 
 const modals = {
     BuySellModal: React.lazy(() => import(/* webpackChunkName: "buy-sell-modal" */ './modals/buy-sell-modal.jsx')),
+    FilterModal: React.lazy(() => import(/* webpackChunkName: "filter-modal" */ './modals/filter-modal')),
     QuickAddModal: React.lazy(() => import(/* webpackChunkName: "quick-add-modal" */ './modals/quick-add-modal.jsx')),
 };
 

@@ -10,7 +10,7 @@ import { useStores } from 'Stores';
 import BuySellHeader from './buy-sell-header.jsx';
 import BuySellTable from './buy-sell-table.jsx';
 import { CurrencySelectorModal } from 'Components/buy-sell/currency-selector';
-import FilterModal from './filter-modal';
+// import FilterModal from './filter-modal';
 import './buy-sell.scss';
 
 const BuySell = () => {
@@ -45,7 +45,7 @@ const BuySell = () => {
 
     return (
         <div className='buy-sell'>
-            <FilterModal />
+            {/* <FilterModal /> */}
             <BuySellHeader table_type={buy_sell_store.table_type} />
             <BuySellTable
                 key={buy_sell_store.table_type}

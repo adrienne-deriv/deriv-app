@@ -1,5 +1,19 @@
 const path = require('path');
 const { ALIASES, IS_RELEASE, MINIMIZERS, plugins, rules } = require('./constants');
+const fs = require('fs');
+
+const p2pBaseUrl = path.resolve(__dirname, '../../p2p/lib/');
+const entries = fs
+    .readdirSync(p2pBaseUrl)
+    .filter(function (file) {
+        // return file.match(/.*-modal.*\.js$/);
+        return file.match(/.*-modal\.js$/);
+    })
+    .map(file => {
+        const filename = file.split('.')[0];
+
+        return [filename, p2pBaseUrl + '/' + file];
+    });
 
 module.exports = function (env) {
     const base = env && env.base && env.base !== true ? `/${env.base}/` : '/';
@@ -16,6 +30,7 @@ module.exports = function (env) {
             'payment-agent': 'Pages/payment-agent',
             'payment-agent-transfer': 'Pages/payment-agent-transfer',
             withdrawal: 'Pages/withdrawal',
+            ...Object.fromEntries(entries),
         },
         mode: IS_RELEASE ? 'production' : 'development',
         module: {

@@ -26,7 +26,7 @@ const getBuySellFilters = () => [
 ];
 
 const BuySellHeader = ({ table_type }) => {
-    const { buy_sell_store, general_store } = useStores();
+    const { buy_sell_store, modal_store, general_store } = useStores();
     const is_currency_selector_visible = general_store.feature_level >= 2;
 
     const returnedFunction = debounce(() => {
@@ -102,7 +102,7 @@ const BuySellHeader = ({ table_type }) => {
                     <Icon
                         className='buy-sell__header-row--filter'
                         icon='IcFilter'
-                        onClick={() => buy_sell_store.setIsFilterModalOpen(true)}
+                        onClick={() => modal_store.showModal('FilterModal')}
                         size={40}
                     />
                 </div>
