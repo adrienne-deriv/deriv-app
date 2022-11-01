@@ -1,23 +1,44 @@
-import { action, computed, observable, reaction } from 'mobx';
+import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import BaseStore from 'Stores/base_store';
 
 export default class ModalStore extends BaseStore {
-    @observable modal_id = '';
-    @observable current_modal = '';
-    @observable is_modal_open = false;
-    @observable modal_history = null;
-    @observable previous_modal = '';
+    modal_id = '';
+    current_modal = '';
+    is_modal_open = false;
+    modal_history = null;
+    previous_modal = '';
 
     modal_props = observable.map(new Map());
     should_switch_modal = false;
     MODAL_TRANSITION_DELAY = 300;
 
-    @computed
+    constructor(root_store) {
+        super(root_store);
+
+        makeObservable(this, {
+            current_modal: observable,
+            is_modal_open: observable,
+            modal_id: observable,
+            // modal_props: observable.map,
+            modal_history: observable,
+            previous_modal: observable,
+
+            props: computed,
+            onMount: action.bound,
+            setCurrentModal: action.bound,
+            setIsModalOpen: action.bound,
+            setModalId: action.bound,
+            passModalProps: action.bound,
+            setPreviousModal: action.bound,
+            showModal: action.bound,
+            hideModal: action.bound,
+        });
+    }
+
     get props() {
         return this.modal_props.get(this.current_modal);
     }
 
-    @action.bound
     onMount() {
         // only this reaction can modify is_modal_open and modal_id, NO ONE ELSE CAN DO IT!
         const disposer = reaction(
@@ -45,22 +66,18 @@ export default class ModalStore extends BaseStore {
         return disposer;
     }
 
-    @action.bound
     setCurrentModal(modal_id) {
         this.current_modal = modal_id;
     }
 
-    @action.bound
     setIsModalOpen(is_modal_open) {
         this.is_modal_open = is_modal_open;
     }
 
-    @action.bound
     setModalId(modal_id) {
         this.modal_id = modal_id;
     }
 
-    @action.bound
     passModalProps(modal_id, modal_props) {
         if (this.modal_props.has(modal_id)) {
             let prop = this.modal_props.get(modal_id);
@@ -73,12 +90,10 @@ export default class ModalStore extends BaseStore {
         }
     }
 
-    @action.bound
     setPreviousModal(modal_id) {
         this.previous_modal = modal_id;
     }
 
-    @action.bound
     showModal(modal_id) {
         console.log('showing', modal_id);
         // case 1: there is a current modal being shown, and they want to show another modal
@@ -91,7 +106,6 @@ export default class ModalStore extends BaseStore {
         }
     }
 
-    @action.bound
     hideModal() {
         // case 1: there is no previous modal and only 1 modal is shown
         if (this.previous_modal === '') {

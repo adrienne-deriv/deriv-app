@@ -3,6 +3,11 @@ import { observer } from 'mobx-react-lite';
 import { reaction } from 'mobx';
 import { useStores } from 'Stores';
 
+/**
+ *
+ * @param {*} defaultState
+ * @returns
+ */
 export const useStateWithModal = defaultState => {
     const { modal_store } = useStores();
     const [localState, setLocalState] = React.useState(defaultState);
