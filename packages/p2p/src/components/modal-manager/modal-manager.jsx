@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { reaction } from 'mobx';
 import { useStores } from 'Stores';
+import { lazyModals } from './modals/modals.js';
 
 /**
  *
@@ -29,19 +30,13 @@ export const useStateWithModal = defaultState => {
             setModalProps(propsToModals);
         }
         Object.keys(propsToModals).forEach(prop => {
-            let modal_id = propsToModals[prop];
+            let modal_id = propsTolazyModals[prop];
             modal_store.passModalProps(modal_id, {
                 [prop]: localState,
             });
         });
         return [localState, setLocalState];
     };
-};
-
-const modals = {
-    BuySellModal: React.lazy(() => import(/* webpackChunkName: "buy-sell-modal" */ './modals/buy-sell-modal.jsx')),
-    FilterModal: React.lazy(() => import(/* webpackChunkName: "filter-modal" */ './modals/filter-modal')),
-    QuickAddModal: React.lazy(() => import(/* webpackChunkName: "quick-add-modal" */ './modals/quick-add-modal.jsx')),
 };
 
 const ModalManager = () => {
@@ -54,7 +49,7 @@ const ModalManager = () => {
         const disposeLazyModalSetterReaction = reaction(
             () => modal_store.modal_id,
             () => {
-                setLazyModal(modals[modal_store.modal_id]);
+                setLazyModal(lazyModals[modal_store.modal_id]);
             }
         );
 

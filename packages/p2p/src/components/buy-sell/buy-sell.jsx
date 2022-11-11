@@ -4,13 +4,11 @@ import { observer } from 'mobx-react-lite';
 import { localize } from 'Components/i18next';
 import PageReturn from 'Components/page-return/page-return.jsx';
 import Verification from 'Components/verification/verification.jsx';
-import RateChangeModal from 'Components/buy-sell/rate-change-modal.jsx';
 import { buy_sell } from 'Constants/buy-sell';
 import { useStores } from 'Stores';
 import BuySellHeader from './buy-sell-header.jsx';
 import BuySellTable from './buy-sell-table.jsx';
 import { CurrencySelectorModal } from 'Components/buy-sell/currency-selector';
-import FilterModal from './filter-modal';
 import './buy-sell.scss';
 
 const BuySell = () => {
@@ -47,7 +45,7 @@ const BuySell = () => {
 
     return (
         <div className='buy-sell'>
-            <FilterModal />
+            {/* <FilterModal /> */}
             <BuySellHeader table_type={buy_sell_store.table_type} />
             <BuySellTable
                 key={buy_sell_store.table_type}
@@ -56,7 +54,7 @@ const BuySell = () => {
                 showAdvertiserPage={buy_sell_store.showAdvertiserPage}
                 onScroll={onScroll}
             />
-            <RateChangeModal onMount={buy_sell_store.setShouldShowPopup} />
+            {/* <RateChangeModal onMount={buy_sell_store.setShouldShowPopup} /> */}
             <CurrencySelectorModal is_modal_open={buy_sell_store.should_show_currency_selector_modal} />
         </div>
     );

@@ -9,9 +9,9 @@ import Empty from 'Components/empty/empty.jsx';
 import { TableError } from 'Components/table/table-error.jsx';
 import { useStores } from 'Stores';
 import BuySellRow from './buy-sell-row.jsx';
-import CancelAddPaymentMethodModal from '../my-profile/payment-methods/add-payment-method/cancel-add-payment-method-modal.jsx';
 
 const BuySellRowRendererComponent = row_props => {
+    console.log('[row]', row_props);
     const { buy_sell_store } = useStores();
 
     return (
@@ -31,12 +31,13 @@ const BuySellTable = ({ onScroll }) => {
 
     React.useEffect(
         () => {
-            my_profile_store.setIsCancelAddPaymentMethodModalOpen(false);
-            reaction(
-                () => buy_sell_store.is_buy,
-                () => buy_sell_store.fetchAdvertiserAdverts(),
-                { fireImmediately: true }
-            );
+            // my_profile_store.setIsCancelAddPaymentMethodModalOpen(false);
+            buy_sell_store.fetchAdvertiserAdverts();
+            // reaction(
+            //     () => buy_sell_store.is_buy,
+            //     () => buy_sell_store.fetchAdvertiserAdverts(),
+            //     { fireImmediately: true }
+            // );
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         []
@@ -53,7 +54,6 @@ const BuySellTable = ({ onScroll }) => {
     if (buy_sell_store.items.length) {
         return (
             <>
-                <CancelAddPaymentMethodModal is_floating />
                 <Table className='buy-sell__table'>
                     <Modal
                         name='sort'

@@ -67,8 +67,9 @@ const generateModalTitle = (formik_ref, my_profile_store, table_type, selected_a
                     <Icon
                         icon='IcArrowLeftBold'
                         onClick={() => {
-                            if (formik_ref.current.dirty) {
-                                my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
+                            if (general_store.is_form_modified) {
+                                // my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
+                                modal_store.showModal('CancelAddPaymentMethodModal', true);
                             } else {
                                 my_profile_store.setShouldShowAddPaymentMethodForm(false);
                             }
@@ -127,13 +128,14 @@ const BuySellModal = () => {
 
     const onCancel = () => {
         if (my_profile_store.should_show_add_payment_method_form) {
-            if (formik_ref.current.dirty) {
-                my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
+            if (general_store.is_form_modified) {
+                // my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
+                modal_store.showModal('CancelAddPaymentMethodModal', true);
             } else {
                 my_profile_store.hideAddPaymentMethodForm();
             }
         } else {
-            modal_store.hideModal();
+            modal_store.hideModal(buy_sell_store.fetchAdvertiserAdverts);
         }
         floating_rate_store.setIsMarketRateChanged(false);
         buy_sell_store.setShowRateChangePopup(false);
@@ -142,7 +144,7 @@ const BuySellModal = () => {
     const onConfirmClick = order_info => {
         general_store.redirectTo('orders', { nav: { location: 'buy_sell' } });
         order_store.setOrderId(order_info.id);
-        modal_store.hideModal();
+        modal_store.hideModal(buy_sell_store.fetchAdvertiserAdverts);
         buy_sell_store.setShowAdvertiserPage(false);
     };
 
@@ -150,14 +152,14 @@ const BuySellModal = () => {
 
     React.useEffect(() => {
         return reaction(
-            () => buy_sell_store.should_show_popup,
+            () => modal_store.is_modal_open,
             () => {
                 const balance_check =
                     parseFloat(general_store.balance) === 0 ||
                     parseFloat(general_store.balance) < buy_sell_store.advert?.min_order_amount_limit;
 
                 setIsAccountBalanceLow(balance_check);
-                if (!buy_sell_store.should_show_popup) {
+                if (!modal_store.is_modal_open) {
                     setErrorMessage(null);
                 }
 

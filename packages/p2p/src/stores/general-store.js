@@ -19,6 +19,7 @@ export default class GeneralStore extends BaseStore {
     block_unblock_user_error = '';
     balance;
     feature_level = null;
+    formik_ref = null;
     inactive_notification_count = 0;
     is_advertiser = false;
     is_advertiser_blocked = null;
@@ -67,6 +68,7 @@ export default class GeneralStore extends BaseStore {
             advertiser_sell_limit: observable,
             block_unblock_user_error: observable,
             balance: observable,
+            formik_ref: observable,
             inactive_notification_count: observable,
             is_advertiser: observable,
             is_advertiser_blocked: observable,
@@ -120,6 +122,7 @@ export default class GeneralStore extends BaseStore {
             setAdvertiserSellLimit: action.bound,
             setAppProps: action.bound,
             setFeatureLevel: action.bound,
+            setFormikRef: action.bound,
             setInactiveNotificationCount: action.bound,
             setIsAdvertiser: action.bound,
             setIsBlocked: action.bound,
@@ -169,12 +172,21 @@ export default class GeneralStore extends BaseStore {
         return getFormattedDateString(new Date(convertToMillis(this.user_blocked_until)), false, true);
     }
 
+    get form_state() {
+        return this.formik_ref?.values;
+    }
+
     get is_active_tab() {
         return this.order_table_type === order_list.ACTIVE;
     }
 
     get is_barred() {
         return !!this.user_blocked_until;
+    }
+
+    get is_form_modified() {
+        const { modal_store } = this.root_store;
+        return (modal_store.has_history && modal_store.modal_history.dirty) || this.formik_ref?.dirty;
     }
 
     get is_my_profile_tab_visible() {
@@ -575,6 +587,11 @@ export default class GeneralStore extends BaseStore {
 
     setBlockUnblockUserError(block_unblock_user_error) {
         this.block_unblock_user_error = block_unblock_user_error;
+    }
+
+    setFormikRef(formik_ref) {
+        console.log('new formik ref set', formik_ref);
+        this.formik_ref = formik_ref;
     }
 
     setFeatureLevel(feature_level) {

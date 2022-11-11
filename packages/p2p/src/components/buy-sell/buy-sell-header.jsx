@@ -30,7 +30,7 @@ const BuySellHeader = ({ table_type }) => {
     const is_currency_selector_visible = general_store.feature_level >= 2;
 
     const returnedFunction = debounce(() => {
-        buy_sell_store.loadMoreItems({ startIndex: 0 });
+        // buy_sell_store.loadMoreItems({ startIndex: 0 });
     }, 1000);
 
     const onClear = () => {
@@ -55,7 +55,7 @@ const BuySellHeader = ({ table_type }) => {
             buy_sell_store.setSearchTerm('');
             buy_sell_store.setItems([]);
             buy_sell_store.setIsLoading(true);
-            buy_sell_store.loadMoreItems({ startIndex: 0 });
+            // buy_sell_store.loadMoreItems({ startIndex: 0 });
 
             const interval = setInterval(() => {
                 buy_sell_store.getWebsiteStatus();
