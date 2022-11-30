@@ -638,22 +638,15 @@ export default class BuySellStore extends BaseStore {
     }
 
     setSelectedAdvert(selected_advert) {
-        const { general_store } = this.root_store;
         if (!this.root_store.general_store.is_advertiser) {
             this.setShouldShowVerification(true);
         } else if (this.is_sell_advert) {
             this.getAdvertiserInfo();
             this.setSelectedAdState(selected_advert);
-            // this.setShouldShowPopup(true);
-            general_store.showModal({
-                key: 'BuySellModal',
-            });
+            this.setShouldShowPopup(true);
         } else {
             this.setSelectedAdState(selected_advert);
-            // this.setShouldShowPopup(true);
-            general_store.showModal({
-                key: 'BuySellModal',
-            });
+            this.setShouldShowPopup(true);
         }
     }
 
