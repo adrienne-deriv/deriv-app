@@ -1,12 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Button, Modal, Text } from '@deriv/components';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'Stores';
 import { Localize } from 'Components/i18next';
+import { useModalManagerContext } from '../modal-manager-context';
 
 const CancelAddPaymentMethodModal = () => {
-    const { my_profile_store, my_ads_store, modal_store } = useStores();
+    const { my_profile_store } = useStores();
+    const { hideModal, is_modal_open } = useModalManagerContext();
 
     React.useEffect(() => {
         return () => {
@@ -19,7 +20,7 @@ const CancelAddPaymentMethodModal = () => {
     return (
         <Modal
             has_close_icon={false}
-            is_open={modal_store.is_modal_open}
+            is_open={is_modal_open}
             small
             title={
                 <Text color='prominent' size='s' weight='bold'>
@@ -36,24 +37,14 @@ const CancelAddPaymentMethodModal = () => {
                 <Button
                     large
                     onClick={() => {
-                        // my_profile_store.setIsCancelAddPaymentMethodModalOpen(false);
-                        modal_store.hideModal('CancelAddPaymentMethodModal');
+                        hideModal();
                         my_profile_store.hideAddPaymentMethodForm();
-                        my_profile_store.setIsCancelEditPaymentMethodModalOpen(false);
-                        my_ads_store.setShouldShowAddPaymentMethodModal(false);
                     }}
                     secondary
                 >
                     <Localize i18n_default_text='Cancel' />
                 </Button>
-                <Button
-                    large
-                    onClick={() => {
-                        modal_store.hideModal('CancelAddPaymentMethodModal');
-                        // my_profile_store.setIsCancelAddPaymentMethodModalOpen(false);
-                    }}
-                    primary
-                >
+                <Button large onClick={hideModal} primary>
                     <Localize i18n_default_text='Go back' />
                 </Button>
             </Modal.Footer>

@@ -122,7 +122,7 @@ const BuySellModal = ({ table_type, selected_ad, should_show_popup, setShouldSho
 
     const onCancel = () => {
         if (my_profile_store.should_show_add_payment_method_form) {
-            if (formik_ref.current.dirty) {
+            if (general_store.is_form_modified) {
                 my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
             } else {
                 my_profile_store.hideAddPaymentMethodForm();

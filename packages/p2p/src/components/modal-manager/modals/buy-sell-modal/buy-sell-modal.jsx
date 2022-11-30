@@ -18,7 +18,6 @@ import { useStores } from 'Stores';
 import BuySellForm from 'Components/buy-sell/buy-sell-form.jsx';
 import BuySellFormReceiveAmount from 'Components/buy-sell/buy-sell-form-receive-amount.jsx';
 import NicknameForm from 'Components/nickname-form';
-import 'Components/buy-sell/buy-sell-modal.scss';
 import AddPaymentMethodForm from 'Components/my-profile/payment-methods/add-payment-method/add-payment-method-form.jsx';
 import { api_error_codes } from 'Constants/api-error-codes';
 import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
@@ -72,8 +71,8 @@ const BuySellModal = () => {
         />
     );
     const [is_account_balance_low, setIsAccountBalanceLow] = React.useState(false);
-    const { hideModal, is_modal_open } = useModalManagerContext();
-    const formik_ref = React.useRef();
+    const { hideModal, is_modal_open, showModal } = useModalManagerContext();
+    const formik_ref = React.useRef(); // TODO: refactor this out once p2p-refactor is merged
 
     const generateModalTitle = () => {
         if (my_profile_store.should_show_add_payment_method_form) {
@@ -84,7 +83,9 @@ const BuySellModal = () => {
                             icon='IcArrowLeftBold'
                             onClick={() => {
                                 if (formik_ref.current.dirty) {
-                                    my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
+                                    showModal({
+                                        key: 'CancelAddPaymentMethodModal',
+                                    });
                                 } else {
                                     my_profile_store.setShouldShowAddPaymentMethodForm(false);
                                 }
@@ -125,7 +126,9 @@ const BuySellModal = () => {
     const onCancel = () => {
         if (my_profile_store.should_show_add_payment_method_form) {
             if (formik_ref.current.dirty) {
-                my_profile_store.setIsCancelAddPaymentMethodModalOpen(true);
+                showModal({
+                    key: 'CancelAddPaymentMethodModal',
+                });
             } else {
                 my_profile_store.hideAddPaymentMethodForm();
             }
