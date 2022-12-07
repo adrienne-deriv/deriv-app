@@ -69,11 +69,10 @@ const App = props => {
             general_store.redirectTo('orders');
             order_store.setOrderId(order_id);
         }
-        general_store.props.setP2POrderProps({
-            order_id,
-            redirectToOrderDetails: general_store.redirectToOrderDetails,
-            setIsRatingModalOpen: order_store.setIsRatingModalOpen,
-        });
+        // general_store.props.setP2POrderProps({
+        //     order_id,
+        //     redirectToOrderDetails: general_store.redirectToOrderDetails,
+        // });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [order_id]);
 
@@ -105,7 +104,7 @@ const App = props => {
             <Notifications />
             <ModalManagerContextProvider>
                 <ModalManager />
-                <AppContent />
+                <AppContent order_id={order_id} />
             </ModalManagerContextProvider>
         </main>
     );

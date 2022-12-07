@@ -366,7 +366,7 @@ export default class GeneralStore extends BaseStore {
     }
 
     showCompletedOrderNotification(advertiser_name, order_id) {
-        const { order_store } = this.root_store;
+        const { order_store, general_store } = this.root_store;
         const notification_key = `order-${order_id}`;
 
         // we need to refresh notifications in notifications-store in the case of a bug when user closes the notification, the notification count is not synced up with the closed notification
@@ -376,7 +376,9 @@ export default class GeneralStore extends BaseStore {
             action: {
                 onClick: () => {
                     if (order_store.order_id === order_id) {
-                        order_store.setIsRatingModalOpen(true);
+                        general_store.showModal({
+                            key: 'RatingModal',
+                        });
                     }
                     this.redirectToOrderDetails(order_id);
                 },

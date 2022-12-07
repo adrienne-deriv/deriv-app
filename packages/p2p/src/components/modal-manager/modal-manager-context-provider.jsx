@@ -9,7 +9,16 @@ const ModalManagerContextProvider = props => {
     // for mobile, modals are stacked and not shown alternatingly one by one
     const [stacked_modal, setStackedModal] = React.useState({});
     const [is_modal_open, setIsModalOpen] = React.useState(false);
+    const [modal_props, setModalProps] = React.useState(new Map());
     const { general_store } = useStores();
+
+    const registerModalProps = modals => {
+        if (Array.isArray(modals)) {
+            modals.forEach(modal => setModalProps(modal_props.set(modal.key, modal.props)));
+        } else {
+            setModalProps(modal_props.set(modals.key, modals.props));
+        }
+    };
 
     const showModal = modal => {
         if (isDesktop()) {
@@ -50,6 +59,8 @@ const ModalManagerContextProvider = props => {
         hideModal,
         is_modal_open,
         modal: active_modal,
+        modal_props,
+        registerModalProps,
         stacked_modal,
         showModal,
     };

@@ -9,4 +9,7 @@ export const modals = {
             /* webpackChunkName: "cancel-add-payment-method-modal" */ 'Components/modal-manager/modals/cancel-add-payment-method-modal'
         )
     ),
+    RatingModal: React.lazy(() =>
+        import(/* webpackChunkName: "rating-modal" */ 'Components/modal-manager/modals/rating-modal')
+    ),
 };

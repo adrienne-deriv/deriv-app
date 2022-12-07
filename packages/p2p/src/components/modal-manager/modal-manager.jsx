@@ -3,19 +3,25 @@ import { modals } from 'Constants/modals';
 import { useModalManagerContext } from './modal-manager-context';
 
 const ModalManager = () => {
-    const { modal, stacked_modal } = useModalManagerContext();
+    const { modal, modal_props, stacked_modal } = useModalManagerContext();
+    const { key } = modal;
 
-    const { key, props } = modal;
     const Modal = modals[key];
     const StackedModal = modals[stacked_modal?.key];
+    const getModalProps = current_modal => {
+        if (modal_props.has(current_modal.key)) {
+            return modal_props.get(current_modal.key);
+        }
+        return current_modal.props;
+    };
 
     if (Modal)
         return (
             <React.Suspense fallback={null}>
-                <Modal {...props} />
+                <Modal {...getModalProps(modal)} />
                 {StackedModal && (
                     <React.Suspense fallback={null}>
-                        <StackedModal {...stacked_modal.props} />
+                        <StackedModal {...getModalProps(stacked_modal)} />
                     </React.Suspense>
                 )}
             </React.Suspense>
