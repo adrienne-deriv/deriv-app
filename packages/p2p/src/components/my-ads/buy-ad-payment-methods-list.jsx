@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Formik, Field } from 'formik';
+import { reaction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Autocomplete, Icon, useOnClickOutside } from '@deriv/components';
 import { isDesktop, isMobile } from '@deriv/shared';
@@ -24,6 +25,18 @@ const BuyAdPaymentMethodsList = ({ selected_methods, setSelectedMethods, touched
         setHideList(true);
         my_ads_store.setCurrentMethod({ key: null, is_deleted: false });
     });
+
+    React.useEffect(() => {
+        const disposeAddPaymentMethodsList = reaction(
+            () => my_profile_store.payment_methods_list,
+            () =>
+                setPaymentMethodsList(
+                    my_profile_store.payment_methods_list.filter(({ value }) => !selected_methods.includes(value))
+                )
+        );
+        return disposeAddPaymentMethodsList;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     React.useEffect(() => {
         setPaymentMethodsList(
