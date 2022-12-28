@@ -4,15 +4,20 @@ import { Loading, Tabs } from '@deriv/components';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'Stores';
 import AdvertiserPage from 'Components/advertiser-page/advertiser-page.jsx';
-import BuySell from './buy-sell/buy-sell.jsx';
+// import BuySell from './buy-sell/buy-sell.jsx';
 import Dp2pBlocked from './dp2p-blocked';
 import { localize } from './i18next';
-import MyAds from './my-ads/my-ads.jsx';
-import MyProfile from './my-profile';
+// import MyAds from './my-ads/my-ads.jsx';
+// import MyProfile from './my-profile';
 import NicknameForm from './nickname-form';
-import Orders from './orders/orders.jsx';
+// import Orders from './orders/orders.jsx';
 import TemporarilyBarredHint from './temporarily-barred-hint';
 import Verification from './verification/verification.jsx';
+
+const LazyBuySell = React.lazy(() => import(/* webpackChunkName: "buy-sell" */ './buy-sell/buy-sell.jsx'));
+const LazyMyAds = React.lazy(() => import(/* webpackChunkName: "my-ads" */ './my-ads/my-ads.jsx'));
+const LazyOrders = React.lazy(() => import(/* webpackChunkName: "orders" */ './orders/orders.jsx'));
+const LazyMyProfile = React.lazy(() => import(/* webpackChunkName: "my-profile" */ './my-profile'));
 
 const AppContent = () => {
     const { buy_sell_store, general_store } = useStores();
@@ -50,18 +55,26 @@ const AppContent = () => {
         >
             <div label={localize('Buy / Sell')}>
                 <TemporarilyBarredHint />
-                <BuySell />
+                <React.Suspense fallback={null}>
+                    <LazyBuySell />
+                </React.Suspense>
             </div>
             <div count={general_store.notification_count} label={localize('Orders')}>
-                <Orders />
+                <React.Suspense fallback={null}>
+                    <LazyOrders />
+                </React.Suspense>
             </div>
             <div label={localize('My ads')}>
                 <TemporarilyBarredHint />
-                <MyAds />
+                <React.Suspense fallback={null}>
+                    <LazyMyAds />
+                </React.Suspense>
             </div>
             {general_store.is_advertiser && (
                 <div label={localize('My profile')} data-testid='my_profile'>
-                    <MyProfile />
+                    <React.Suspense fallback={null}>
+                        <LazyMyProfile />
+                    </React.Suspense>
                 </div>
             )}
         </Tabs>
