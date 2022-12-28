@@ -17,14 +17,15 @@ import StarRating from 'Components/star-rating';
 import AdvertiserPageDropdownMenu from './advertiser-page-dropdown-menu.jsx';
 import TradeBadge from '../trade-badge/trade-badge.jsx';
 import BlockUserOverlay from './block-user/block-user-overlay';
-import BlockUserModal from 'Components/block-user/block-user-modal';
 import ErrorModal from 'Components/error-modal/error-modal';
 import classNames from 'classnames';
 import { OnlineStatusIcon, OnlineStatusLabel } from 'Components/online-status';
+import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
 import './advertiser-page.scss';
 
 const AdvertiserPage = () => {
     const { general_store, advertiser_page_store, buy_sell_store } = useStores();
+    const { showModal } = useModalManagerContext();
 
     const is_my_advert = advertiser_page_store.advertiser_details_id === general_store.advertiser_id;
     // Use general_store.advertiser_info since resubscribing to the same id from advertiser page returns error
@@ -38,7 +39,7 @@ const AdvertiserPage = () => {
         is_online,
         last_online_time,
         last_name,
-        name,
+        // name,
         rating_average,
         rating_count,
         recommended_average,
@@ -99,15 +100,6 @@ const AdvertiserPage = () => {
                 }}
                 width={isMobile() ? '90rem' : '40rem'}
             />
-            <BlockUserModal
-                advertiser_name={name}
-                is_advertiser_blocked={!!advertiser_page_store.is_counterparty_advertiser_blocked && !is_my_advert}
-                is_block_user_modal_open={
-                    general_store.is_block_user_modal_open && !general_store.block_unblock_user_error
-                }
-                onCancel={advertiser_page_store.onCancel}
-                onSubmit={advertiser_page_store.onSubmit}
-            />
             <BuySellModal
                 selected_ad={advertiser_page_store.advert}
                 should_show_popup={advertiser_page_store.show_ad_popup}
@@ -128,7 +120,12 @@ const AdvertiserPage = () => {
             </div>
             <BlockUserOverlay
                 is_visible={!!advertiser_page_store.is_counterparty_advertiser_blocked && !is_my_advert}
-                onClickUnblock={() => general_store.setIsBlockUserModalOpen(true)}
+                onClickUnblock={() =>
+                    showModal({
+                        key: 'BlockUserModal',
+                        props: {},
+                    })
+                }
             >
                 <div className='advertiser-page-details-container'>
                     <div className='advertiser-page__header-details'>

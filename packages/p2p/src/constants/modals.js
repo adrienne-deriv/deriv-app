@@ -11,6 +11,9 @@ export const modals = {
             /* webpackChunkName: "add-payment-method-error-modal" */ 'Components/modal-manager/modals/add-payment-method-error-modal'
         )
     ),
+    BlockUserModal: React.lazy(() =>
+        import(/* webpackChunkName: "block-user-modal" */ 'Components/modal-manager/modals/block-user-modal')
+    ),
     BuySellModal: React.lazy(() =>
         import(/* webpackChunkName: "buy-sell-modal" */ 'Components/modal-manager/modals/buy-sell-modal')
     ),

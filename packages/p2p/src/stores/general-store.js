@@ -28,7 +28,6 @@ export default class GeneralStore extends BaseStore {
     is_advertiser_blocked = null;
     is_blocked = false;
     is_block_unblock_user_loading = false;
-    is_block_user_modal_open = false;
     is_high_risk_fully_authed_without_fa = false;
     is_listed = false;
     is_loading = false;
@@ -80,7 +79,6 @@ export default class GeneralStore extends BaseStore {
             is_advertiser_blocked: observable,
             is_blocked: observable,
             is_block_unblock_user_loading: observable,
-            is_block_user_modal_open: observable,
             is_listed: observable,
             is_loading: observable,
             is_p2p_blocked_for_pa: observable,
@@ -645,10 +643,6 @@ export default class GeneralStore extends BaseStore {
 
     setIsBlocked(is_blocked) {
         this.is_blocked = is_blocked;
-    }
-
-    setIsBlockUserModalOpen(is_block_user_modal_open) {
-        this.is_block_user_modal_open = is_block_user_modal_open;
     }
 
     setIsBlockUnblockUserLoading(is_block_unblock_user_loading) {
