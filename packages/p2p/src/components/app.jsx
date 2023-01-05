@@ -8,7 +8,7 @@ import { waitWS } from 'Utils/websocket';
 import { useStores } from 'Stores';
 import AppContent from './app-content.jsx';
 import { setLanguage } from './i18next';
-import { ModalManager, ModalManagerContextProvider } from 'Components/modal-manager';
+import { ModalManager, ModalManagerContextProvider } from './modal-manager';
 import './app.scss';
 
 const App = props => {
@@ -68,11 +68,7 @@ const App = props => {
             general_store.redirectTo('orders');
             order_store.setOrderId(order_id);
         }
-        general_store.props.setP2POrderProps({
-            order_id,
-            redirectToOrderDetails: general_store.redirectToOrderDetails,
-            setIsRatingModalOpen: order_store.setIsRatingModalOpen,
-        });
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [order_id]);
 
@@ -104,7 +100,7 @@ const App = props => {
             <Notifications />
             <ModalManagerContextProvider>
                 <ModalManager />
-                <AppContent />
+                <AppContent order_id={order_id} />
             </ModalManagerContextProvider>
         </main>
     );
