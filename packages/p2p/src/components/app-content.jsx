@@ -5,16 +5,19 @@ import { isAction, reaction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'Stores';
 import AdvertiserPage from 'Components/advertiser-page/advertiser-page.jsx';
-import BuySell from './buy-sell/buy-sell.jsx';
 import Dp2pBlocked from './dp2p-blocked';
 import { localize } from './i18next';
-import MyAds from './my-ads/my-ads.jsx';
 import MyProfile from './my-profile';
 import NicknameForm from './nickname-form';
-import Orders from './orders/orders.jsx';
-import TemporarilyBarredHint from './temporarily-barred-hint';
 import Verification from './verification/verification.jsx';
 import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
+
+const LazyBuySell = React.lazy(() => import(/* webpackChunkName: "buy-sell" */ './buy-sell/buy-sell.jsx'));
+const LazyOrders = React.lazy(() => import(/* webpackChunkName: "orders" */ './orders/orders.jsx'));
+const LazyMyAds = React.lazy(() => import(/* webpackChunkName: "my-ads" */ './my-ads/my-ads.jsx'));
+const LazyTemporarilyBarredHint = React.lazy(() =>
+    import(/* webpackChunkName: "temporarily-barred-hint" */ './temporarily-barred-hint')
+);
 
 const AppContent = ({ order_id }) => {
     const { buy_sell_store, general_store } = useStores();
@@ -73,15 +76,21 @@ const AppContent = ({ order_id }) => {
             top
         >
             <div label={localize('Buy / Sell')}>
-                <TemporarilyBarredHint />
-                <BuySell />
+                <React.Suspense fallback={null}>
+                    <LazyTemporarilyBarredHint />
+                    <LazyBuySell />
+                </React.Suspense>
             </div>
             <div count={general_store.notification_count} label={localize('Orders')}>
-                <Orders />
+                <React.Suspense fallback={null}>
+                    <LazyOrders />
+                </React.Suspense>
             </div>
             <div label={localize('My ads')}>
-                <TemporarilyBarredHint />
-                <MyAds />
+                <React.Suspense fallback={null}>
+                    <LazyTemporarilyBarredHint />
+                    <LazyMyAds />
+                </React.Suspense>
             </div>
             {general_store.is_advertiser && (
                 <div label={localize('My profile')} data-testid='my_profile'>
