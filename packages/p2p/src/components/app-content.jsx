@@ -21,7 +21,7 @@ const AppContent = ({ order_id }) => {
     const { showModal, hideModal } = useModalManagerContext();
 
     React.useEffect(() => {
-        return reaction(
+        const setP2POrderPropsReaction = reaction(
             () => general_store.props.setP2POrderProps,
             () => {
                 if (isAction(general_store.props.setP2POrderProps)) {
@@ -39,9 +39,14 @@ const AppContent = ({ order_id }) => {
                 }
             }
         );
+
+        return () => {
+            setP2POrderPropsReaction();
+        };
     }, []);
 
     if (general_store.is_loading) {
+        console.log('its from here loading');
         return <Loading is_fullscreen={false} />;
     }
 

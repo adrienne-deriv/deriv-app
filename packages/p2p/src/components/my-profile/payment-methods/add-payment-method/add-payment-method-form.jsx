@@ -22,7 +22,10 @@ const AddPaymentMethodForm = ({ should_show_separated_footer = false }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    if (!my_profile_store.selected_payment_method_display_name && !my_profile_store.selected_payment_method_fields) {
+    if (
+        !general_store.is_network_online ||
+        (!my_profile_store.selected_payment_method_display_name && !my_profile_store.selected_payment_method_fields)
+    ) {
         return <Loading is_fullscreen={false} />;
     }
 

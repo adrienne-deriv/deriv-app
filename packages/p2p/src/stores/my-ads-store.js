@@ -549,6 +549,7 @@ export default class MyAdsStore extends BaseStore {
     }
 
     setIsFormLoading(is_form_loading) {
+        console.log('wtf', is_form_loading);
         this.is_form_loading = is_form_loading;
     }
 

@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import * as React from 'react';
 import { observer } from 'mobx-react-lite';
+import { reaction } from 'mobx';
 import PropTypes from 'prop-types';
 import { routes } from '@deriv/shared';
 import ServerTime from 'Utils/server-time';
@@ -46,6 +47,13 @@ const App = props => {
                 window.location.reload();
             }
         };
+        window.addEventListener('online', () => {
+            general_store.setIsNetworkOnline(true);
+        });
+        window.addEventListener('offline', () => {
+            general_store.setIsNetworkOnline(false);
+        });
+
         waitWS('authorize').then(() => {
             general_store.onMount();
             setOnRemount(general_store.onMount);
@@ -55,7 +63,21 @@ const App = props => {
             }
         });
 
-        return () => general_store.onUnmount();
+        const disposeShouldRemountReaction = reaction(
+            () => general_store.should_remount_on_reconnect,
+            should_remount_on_reconnect => {
+                if (!should_remount_on_reconnect) {
+                    setOnRemount(() => {});
+                } else {
+                    setOnRemount(general_store.onMount);
+                }
+            }
+        );
+
+        return () => {
+            general_store.onUnmount();
+            disposeShouldRemountReaction();
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

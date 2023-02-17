@@ -34,6 +34,7 @@ export default class GeneralStore extends BaseStore {
     is_listed = false;
     is_loading = false;
     is_modal_open = false;
+    is_network_online = true;
     is_p2p_blocked_for_pa = false;
     is_restricted = false;
     nickname = null;
@@ -47,6 +48,7 @@ export default class GeneralStore extends BaseStore {
     props = {};
     review_period;
     saved_form_state = null;
+    should_remount_on_reconnect = true;
     should_show_real_name = false;
     should_show_popup = false;
     user_blocked_count = 0;
@@ -85,6 +87,7 @@ export default class GeneralStore extends BaseStore {
             is_block_user_modal_open: observable,
             is_listed: observable,
             is_loading: observable,
+            is_network_online: observable,
             is_p2p_blocked_for_pa: observable,
             is_restricted: observable,
             nickname: observable,
@@ -97,6 +100,7 @@ export default class GeneralStore extends BaseStore {
             props: observable.ref,
             review_period: observable,
             saved_form_state: observable,
+            should_remount_on_reconnect: observable,
             should_show_real_name: observable,
             should_show_popup: observable,
             user_blocked_count: observable,
@@ -135,6 +139,7 @@ export default class GeneralStore extends BaseStore {
             setAdvertiserRelationsResponse: action.bound, //TODO: Remove this when backend has fixed is_blocked flag issue
             setFeatureLevel: action.bound,
             setFormikRef: action.bound,
+            setIsNetworkOnline: action.bound,
             setSavedFormState: action.bound,
             saveFormState: action.bound,
             setInactiveNotificationCount: action.bound,
@@ -158,6 +163,7 @@ export default class GeneralStore extends BaseStore {
             setBlockUnblockUserError: action.bound,
             setIsAdvertiserBlocked: action.bound,
             setIsBlockUnblockUserLoading: action.bound,
+            setShouldRemountOnReconnect: action.bound,
             setShouldShowRealName: action.bound,
             setShouldShowPopup: action.bound,
             setUserBlockedCount: action.bound,
@@ -419,6 +425,7 @@ export default class GeneralStore extends BaseStore {
     }
 
     onMount() {
+        console.log('onMount');
         this.setIsLoading(true);
         this.setIsBlocked(false);
         this.setIsHighRiskFullyAuthedWithoutFa(false);
@@ -642,6 +649,14 @@ export default class GeneralStore extends BaseStore {
 
     setFormikRef(formik_ref) {
         this.formik_ref = formik_ref;
+    }
+
+    setIsNetworkOnline(is_network_online) {
+        this.is_network_online = is_network_online;
+    }
+
+    setShouldRemountOnReconnect(should_remount_on_reconnect) {
+        this.should_remount_on_reconnect = should_remount_on_reconnect;
     }
 
     setSavedFormState(saved_form_state) {
