@@ -69,7 +69,7 @@ export const getInitialLanguage = () => {
 
     if (query_lang) {
         const query_lang_uppercase = query_lang.toUpperCase();
-        const valid_country_code_regex = /^[A-Z]{2,6}$/;
+        const valid_country_code_regex = /^[A-Z_]{2,6}$/;
         if (valid_country_code_regex.test(query_lang_uppercase) && isLanguageAvailable(query_lang_uppercase)) {
             localStorage.setItem(LANGUAGE_KEY, query_lang_uppercase);
             return encodeURIComponent(query_lang_uppercase);
@@ -82,31 +82,8 @@ export const getInitialLanguage = () => {
         }
     }
 
-    return encodeURIComponent(DEFAULT_LANGUAGE);
+    return DEFAULT_LANGUAGE;
 };
-
-// export const getInitialLanguage = () => {
-//     const url_params = new URLSearchParams(window.location.search);
-//     const query_lang = url_params.get('lang');
-//     const local_storage_language = localStorage.getItem(LANGUAGE_KEY);
-
-//     if (query_lang) {
-//         const query_lang_uppercase = query_lang.toUpperCase();
-//         const valid_lang_code = /^[A-Z_]{2,6}/;
-//         if (isLanguageAvailable(query_lang_uppercase) && valid_lang_code.test(query_lang_uppercase)) {
-//             localStorage.setItem(LANGUAGE_KEY, query_lang_uppercase);
-//             return encodeURIComponent(query_lang_uppercase);
-//         }
-//     }
-
-//     if (local_storage_language) {
-//         if (isLanguageAvailable(local_storage_language)) {
-//             return local_storage_language;
-//         }
-//     }
-
-//     return DEFAULT_LANGUAGE;
-// };
 
 const loadLanguageJson = async (lang: string) => {
     if (!i18n.hasResourceBundle(lang, 'translations') && lang.toUpperCase() !== DEFAULT_LANGUAGE) {
