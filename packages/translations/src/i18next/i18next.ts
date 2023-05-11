@@ -69,10 +69,9 @@ export const getInitialLanguage = () => {
 
     if (query_lang) {
         const query_lang_uppercase = query_lang.toUpperCase();
-        // const valid_country_code_regex = /^[A-Z_]{2,6}$/;
         if (isLanguageAvailable(query_lang_uppercase)) {
             localStorage.setItem(LANGUAGE_KEY, query_lang_uppercase);
-            return query_lang_uppercase;
+            return encodeURI(query_lang_uppercase);
         }
     }
 
