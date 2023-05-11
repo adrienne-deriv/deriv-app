@@ -77,9 +77,8 @@ export const getInitialLanguage = () => {
     }
 
     if (local_storage_language) {
-        const local_storage_language_uppercase = local_storage_language.toUpperCase();
-        if (isLanguageAvailable(local_storage_language_uppercase)) {
-            return encodeURIComponent(local_storage_language_uppercase);
+        if (isLanguageAvailable(local_storage_language)) {
+            return local_storage_language;
         }
     }
 
