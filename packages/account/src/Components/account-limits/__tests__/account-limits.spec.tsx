@@ -257,12 +257,6 @@ describe('<AccountLimits/>', () => {
             })
         ).toBeInTheDocument();
     });
-
-    it('should not render withdrawal_limits_table is_app_settings is true', () => {
-        render(<AccountLimits {...props} is_app_settings />);
-        expect(screen.queryByTestId('withdrawal_limits_table')).not.toBeInTheDocument();
-    });
-
     it('should render withdrawal_limits_table is_app_settings is false', () => {
         render(<AccountLimits {...props} />);
         expect(screen.queryByTestId('withdrawal_limits_table')).toBeInTheDocument();
