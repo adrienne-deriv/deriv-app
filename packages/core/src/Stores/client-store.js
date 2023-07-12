@@ -731,8 +731,8 @@ export default class ClientStore extends BaseStore {
 
     get is_tnc_needed() {
         if (this.is_virtual) return false;
-        const { client_tnc_status } = this.account_settings;
-        const { terms_conditions_version } = this.website_status;
+        const { client_tnc_status } = this.account_settings || {};
+        const { terms_conditions_version } = this.website_status || {};
 
         return typeof client_tnc_status !== 'undefined' && client_tnc_status !== terms_conditions_version;
     }
@@ -2118,8 +2118,8 @@ export default class ClientStore extends BaseStore {
 
         if (response?.logout === 1) {
             this.cleanUp();
-
             RudderStack.reset();
+            this.setIsAuthorize(false);
             this.setLogout(true);
         }
 
