@@ -155,6 +155,7 @@ export default class ClientStore extends BaseStore {
     p2p_advertiser_info = {};
     prev_account_type = 'demo';
     external_url_params = {};
+    is_wallet_migration_in_progress_popup = false;
 
     constructor(root_store) {
         const local_storage_properties = ['device_data'];
@@ -225,6 +226,7 @@ export default class ClientStore extends BaseStore {
             prev_real_account_loginid: observable,
             p2p_advertiser_info: observable,
             prev_account_type: observable,
+            is_wallet_migration_in_progress_popup: observable,
             balance: computed,
             account_open_date: computed,
             is_reality_check_visible: computed,
@@ -409,6 +411,7 @@ export default class ClientStore extends BaseStore {
             setPrevRealAccountLoginid: action.bound,
             setP2pAdvertiserInfo: action.bound,
             setPrevAccountType: action.bound,
+            setWalletsMigrationInProgressPopup: action.bound,
         });
 
         reaction(
@@ -815,7 +818,7 @@ export default class ClientStore extends BaseStore {
 
     get is_valid_login() {
         if (!this.is_logged_in) return true;
-        const valid_login_ids_regex = new RegExp('^(MX|MF|VRTC|MLT|CR|FOG)[0-9]+$', 'i');
+        const valid_login_ids_regex = new RegExp('^(MX|MF|MFW|VRTC|VRW|MLT|CR|CRW|FOG)[0-9]+$', 'i');
         return this.all_loginids.every(id => valid_login_ids_regex.test(id));
     }
 
@@ -1561,7 +1564,7 @@ export default class ClientStore extends BaseStore {
         this.setIsLoggingIn(true);
         this.root_store.notifications.removeNotifications(true);
         this.root_store.notifications.removeAllNotificationMessages(true);
-        if (!this.is_virtual && /VRTC/.test(loginid)) {
+        if (!this.is_virtual && /VRTC|VRW/.test(loginid)) {
             this.setPrevRealAccountLoginid(this.loginid);
         }
         this.setSwitched(loginid);
@@ -1949,7 +1952,7 @@ export default class ClientStore extends BaseStore {
         // if real to virtual --> switch to blue
         // if virtual to real --> switch to green
         // else keep the existing connection
-        const should_switch_socket_connection = this.is_virtual || /VRTC/.test(from_login_id);
+        const should_switch_socket_connection = this.is_virtual || /VRTC|VRW/.test(from_login_id);
 
         if (should_switch_socket_connection) {
             BinarySocket.closeAndOpenNewConnection();
@@ -2756,6 +2759,10 @@ export default class ClientStore extends BaseStore {
         const is_p2p_visible = is_p2p_supported_currency && !this.is_virtual && !is_low_risk_cr_eu_real;
 
         return is_p2p_visible;
+    }
+
+    setWalletsMigrationInProgressPopup(value) {
+        this.is_wallet_migration_in_progress_popup = value;
     }
 }
 /* eslint-enable */

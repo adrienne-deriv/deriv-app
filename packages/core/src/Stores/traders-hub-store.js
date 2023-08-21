@@ -29,6 +29,11 @@ export default class TradersHubStore extends BaseStore {
     };
     is_account_transfer_modal_open = false;
     selected_account = {};
+    is_real_wallets_upgrade_on = false;
+    is_wallet_migration_failed = false;
+    is_wallet_tour_open = false;
+    active_modal_tab = undefined;
+    active_modal_wallet_id = undefined;
 
     constructor(root_store) {
         super({ root_store });
@@ -52,8 +57,12 @@ export default class TradersHubStore extends BaseStore {
             selected_account: observable,
             selected_account_type: observable,
             selected_platform_type: observable,
+            active_modal_tab: observable,
+            active_modal_wallet_id: observable,
             selected_region: observable,
             open_failed_verification_for: observable,
+            is_real_wallets_upgrade_on: observable,
+            is_wallet_migration_failed: observable,
             can_get_more_cfd_mt5_accounts: computed,
             closeModal: action.bound,
             content_flag: computed,
@@ -63,6 +72,8 @@ export default class TradersHubStore extends BaseStore {
             getAvailableDerivEzAccounts: action.bound,
             getExistingAccounts: action.bound,
             handleTabItemClick: action.bound,
+            setWalletModalActiveTab: action.bound,
+            setWalletModalActiveWalletID: action.bound,
             has_any_real_account: computed,
             is_demo_low_risk: computed,
             is_demo: computed,
@@ -74,6 +85,7 @@ export default class TradersHubStore extends BaseStore {
             no_MF_account: computed,
             multipliers_account_status: computed,
             CFDs_restricted_countries: computed,
+            financial_restricted_countries: computed,
             openDemoCFDAccount: action.bound,
             openModal: action.bound,
             openRealAccount: action.bound,
@@ -97,7 +109,11 @@ export default class TradersHubStore extends BaseStore {
             toggleIsTourOpen: action.bound,
             toggleRegulatorsCompareModal: action.bound,
             showTopUpModal: action.bound,
-            financial_restricted_countries: computed,
+            toggleWalletsUpgrade: action.bound,
+            setWalletsMigrationFailedPopup: action.bound,
+            getShortCodeAndRegion: action.bound,
+            is_wallet_tour_open: observable,
+            toggleIsWalletTourOpen: action.bound,
         });
 
         reaction(
@@ -137,8 +153,8 @@ export default class TradersHubStore extends BaseStore {
             () => [this.root_store.client.loginid, this.root_store.client.residence],
             () => {
                 const residence = this.root_store.client.residence;
-                const active_demo = /^VRT/.test(this.root_store.client.loginid);
-                const active_real_mf = /^MF/.test(this.root_store.client.loginid);
+                const active_demo = /^VRT|VRW/.test(this.root_store.client.loginid);
+                const active_real_mf = /^MF|MFW/.test(this.root_store.client.loginid);
 
                 const default_region = () => {
                     if (((active_demo || active_real_mf) && isEuCountry(residence)) || active_real_mf) {
@@ -146,7 +162,7 @@ export default class TradersHubStore extends BaseStore {
                     }
                     return 'Non-EU';
                 };
-                this.selected_account_type = !/^VRT/.test(this.root_store.client.loginid) ? 'real' : 'demo';
+                this.selected_account_type = !/^VRT|VRW/.test(this.root_store.client.loginid) ? 'real' : 'demo';
                 this.selected_region = default_region();
             }
         );
@@ -168,6 +184,14 @@ export default class TradersHubStore extends BaseStore {
                 setIsLoggingIn(false);
             });
         }
+    }
+
+    setWalletModalActiveTab(tab) {
+        this.active_modal_tab = tab;
+    }
+
+    setWalletModalActiveWalletID(wallet_id) {
+        this.active_modal_wallet_id = wallet_id;
     }
 
     get no_MF_account() {
@@ -779,5 +803,17 @@ export default class TradersHubStore extends BaseStore {
             type: data.market_type,
         });
         openTopUpModal();
+    }
+
+    toggleWalletsUpgrade(value) {
+        this.is_real_wallets_upgrade_on = value;
+    }
+
+    setWalletsMigrationFailedPopup(value) {
+        this.is_wallet_migration_failed = value;
+    }
+
+    toggleIsWalletTourOpen(value) {
+        this.is_wallet_tour_open = value;
     }
 }

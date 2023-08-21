@@ -9,10 +9,15 @@ import { getStatus } from '../../constants/transaction-status';
 import { useCashierStore } from '../../stores/useCashierStores';
 import './recent-transaction.scss';
 
+type TRecentTransactionProps = {
+    is_wallet?: boolean;
+};
+
 /** @deprecated Use `CryptoTransactionsSideNoteRecentTransaction` instead. */
-const RecentTransaction = observer(() => {
-    const { client } = useStore();
+const RecentTransaction = observer(({ is_wallet }: TRecentTransactionProps) => {
+    const { client, ui } = useStore();
     const { currency } = client;
+    const { is_mobile } = ui;
     const { transaction_history } = useCashierStore();
     const { setIsCryptoTransactionsVisible } = transaction_history;
     const { last_transaction } = useCryptoTransactions();
@@ -22,21 +27,16 @@ const RecentTransaction = observer(() => {
     };
 
     const SideNoteContainer = ({ children }: React.PropsWithChildren<unknown>) => (
-        <div className='recent-transaction__wrapper'>
+        <div
+            className={classNames('recent-transaction__wrapper', { 'recent-transaction__wrapper--wallet': is_wallet })}
+        >
             <div className='cashier-recent-transaction'>
-                <Text weight='bold' as='p' line_height='s' size='xs'>
-                    <Localize i18n_default_text='Recent transactions' />
+                <Text weight='bold' as='p' line_height='s' size={is_mobile ? 'xxs' : 'xs'}>
+                    <Localize i18n_default_text='Transaction status' />
                 </Text>
-                <div className='cashier-recent-transaction__data-wrapper'>{children}</div>
-                <ButtonLink
-                    to='#'
-                    className='dc-btn--secondary cashier-recent-transaction__view-all-button'
-                    onClick={onClickViewAll}
-                >
-                    <Text weight='bold' as='p' size='xxs'>
-                        <Localize i18n_default_text='View all' />
-                    </Text>
-                </ButtonLink>
+                <div className='cashier-recent-transaction__data-wrapper'>
+                    <div>{children}</div>
+                </div>
             </div>
         </div>
     );
@@ -44,7 +44,7 @@ const RecentTransaction = observer(() => {
     if (!last_transaction) {
         return (
             <SideNoteContainer>
-                <Text as='p' line_height='s' size='xs'>
+                <Text as='p' line_height='s' size={is_mobile ? 'xxs' : 'xs'}>
                     <Localize i18n_default_text='No recent transactions.' />
                 </Text>
             </SideNoteContainer>
@@ -130,6 +130,15 @@ const RecentTransaction = observer(() => {
                     </div>
                 )}
             </div>
+            <ButtonLink
+                to='#'
+                className='dc-btn--secondary cashier-recent-transaction__view-all-button'
+                onClick={onClickViewAll}
+            >
+                <Text weight='bold' as='p' size='xxs'>
+                    <Localize i18n_default_text='View all' />
+                </Text>
+            </ButtonLink>
         </SideNoteContainer>
     );
 });

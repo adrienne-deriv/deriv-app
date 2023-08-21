@@ -1,18 +1,19 @@
 import React from 'react';
-import { DesktopWrapper, MobileWrapper, ButtonToggle, Div100vhContainer, Text } from '@deriv/components';
-import { isDesktop, routes, ContentFlag } from '@deriv/shared';
-import { observer, useStore } from '@deriv/stores';
+import { ButtonToggle, DesktopWrapper, Div100vhContainer, MobileWrapper, Text } from '@deriv/components';
+import { ContentFlag, isDesktop, routes } from '@deriv/shared';
+import { useStore } from '@deriv/stores';
 import { Localize, localize } from '@deriv/translations';
 import CFDsListing from 'Components/cfds-listing';
-import ModalManager from 'Components/modals/modal-manager';
 import MainTitleBar from 'Components/main-title-bar';
+import ModalManager from 'Components/modals/modal-manager';
 import OptionsAndMultipliersListing from 'Components/options-multipliers-listing';
 import ButtonToggleLoader from 'Components/pre-loader/button-toggle-loader';
-import classNames from 'classnames';
 import TourGuide from '../tour-guide/tour-guide';
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
 import './traders-hub.scss';
 
-const TradersHub = () => {
+const TradersHub = observer(() => {
     const { traders_hub, client, ui } = useStore();
     const { notification_messages_ui: Notifications, is_mobile } = ui;
     const { is_landing_company_loaded, is_logged_in, is_switching, is_logging_in, is_account_setting_loaded } = client;
@@ -123,6 +124,6 @@ const TradersHub = () => {
             )}
         </>
     );
-};
+});
 
-export default observer(TradersHub);
+export default TradersHub;

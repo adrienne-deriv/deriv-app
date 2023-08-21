@@ -1,0 +1,216 @@
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { mockStore, StoreProvider } from '@deriv/stores';
+import WalletCardsCarousel from '..';
+import { APIProvider, useFetch } from '@deriv/api';
+
+jest.mock('@deriv/api', () => ({
+    ...jest.requireActual('@deriv/api'),
+    useFetch: jest.fn((name: string) => {
+        if (name === 'authorize') {
+            return {
+                data: {
+                    authorize: {
+                        account_list: [
+                            {
+                                account_category: 'wallet',
+                                currency: 'USD',
+                                is_virtual: 0,
+                                loginid: 'CRW10001',
+                            },
+                            {
+                                account_category: 'trading',
+                                currency: 'USD',
+                                is_virtual: 0,
+                                loginid: 'CRW10002',
+                            },
+                            {
+                                account_category: 'wallet',
+                                currency: 'UST',
+                                is_virtual: 0,
+                                loginid: 'CRW10003',
+                            },
+                            {
+                                account_category: 'wallet',
+                                currency: 'BTC',
+                                is_virtual: 1,
+                                loginid: 'VRW10001',
+                            },
+                            {
+                                account_category: 'wallet',
+                                currency: 'AUD',
+                                is_virtual: 0,
+                                loginid: 'CRW10004',
+                            },
+                            {
+                                account_category: 'wallet',
+                                currency: 'ETH',
+                                is_virtual: 0,
+                                loginid: 'CRW10005',
+                            },
+                        ],
+                        loginid: 'VRW10001',
+                    },
+                },
+            };
+        } else if (name === 'balance') {
+            return {
+                data: {
+                    balance: {
+                        accounts: {
+                            CRW909900: {
+                                balance: 0,
+                            },
+                        },
+                    },
+                },
+            };
+        } else if (name === 'website_status') {
+            return {
+                data: {
+                    website_status: {
+                        currencies_config: {
+                            AUD: { type: 'fiat' },
+                            BTC: { type: 'crypto' },
+                            ETH: { type: 'crypto' },
+                            UST: { type: 'crypto' },
+                            USD: { type: 'fiat' },
+                        },
+                    },
+                },
+            };
+        } else if (name === 'crypto_config') {
+            return {
+                data: {
+                    crypto_config: {
+                        currencies_config: {
+                            BTC: {
+                                minimum_withdrawal: 0.00034286,
+                            },
+                            ETH: {
+                                minimum_withdrawal: 0.02728729,
+                            },
+                            LTC: {
+                                minimum_withdrawal: 0.06032091,
+                            },
+                            USD: {},
+                            USDC: {
+                                minimum_withdrawal: 50,
+                            },
+                            UST: {
+                                minimum_withdrawal: 24.99,
+                            },
+                            eUSDT: {
+                                minimum_withdrawal: 50.05,
+                            },
+                        },
+                    },
+                },
+            };
+        }
+
+        return undefined;
+    }),
+}));
+
+jest.mock('./../cards-slider-swiper', () => jest.fn(() => <div>slider</div>));
+
+describe('<WalletCardsCarousel />', () => {
+    it('Should render slider', () => {
+        const mock = mockStore({});
+
+        const wrapper = ({ children }: { children: JSX.Element }) => (
+            <APIProvider>
+                <StoreProvider store={mock}>{children}</StoreProvider>
+            </APIProvider>
+        );
+
+        render(<WalletCardsCarousel />, { wrapper });
+        const slider = screen.queryByText('slider');
+
+        expect(slider).toBeInTheDocument();
+    });
+
+    it('Should render buttons for REAL', () => {
+        const mock = mockStore({});
+
+        const mockUseFetch = useFetch as jest.MockedFunction<typeof useFetch<'authorize'>>;
+
+        // @ts-expect-error need to come up with a way to mock the return type of useFetch
+        mockUseFetch.mockReturnValue({
+            data: {
+                authorize: {
+                    account_list: [
+                        {
+                            account_category: 'wallet',
+                            account_type: 'doughflow',
+                            currency: 'USD',
+                            is_virtual: 0,
+                            loginid: 'CRW909900',
+                        },
+                    ],
+                    loginid: 'CRW909900',
+                },
+            },
+        });
+
+        const wrapper = ({ children }: { children: JSX.Element }) => (
+            <APIProvider>
+                <StoreProvider store={mock}>{children}</StoreProvider>
+            </APIProvider>
+        );
+
+        render(<WalletCardsCarousel />, { wrapper });
+
+        const btn1 = screen.queryByText(/Deposit/i);
+        const btn2 = screen.queryByText(/Withdraw/i);
+        const btn3 = screen.queryByText(/Transfer/i);
+        const btn4 = screen.queryByText(/Transactions/i);
+
+        expect(btn1).toBeInTheDocument();
+        expect(btn2).toBeInTheDocument();
+        expect(btn3).toBeInTheDocument();
+        expect(btn4).toBeInTheDocument();
+    });
+
+    it('Should render buttons for DEMO', () => {
+        const mock = mockStore({});
+
+        const mockUseFetch = useFetch as jest.MockedFunction<typeof useFetch<'authorize'>>;
+
+        // @ts-expect-error need to come up with a way to mock the return type of useFetch
+        mockUseFetch.mockReturnValue({
+            data: {
+                authorize: {
+                    account_list: [
+                        {
+                            account_category: 'wallet',
+                            account_type: 'doughflow',
+                            currency: 'USD',
+                            is_virtual: 1,
+                            loginid: 'VRW10001',
+                        },
+                    ],
+                    loginid: 'VRW10001',
+                },
+            },
+        });
+
+        const wrapper = ({ children }: { children: JSX.Element }) => (
+            <APIProvider>
+                <StoreProvider store={mock}>{children}</StoreProvider>
+            </APIProvider>
+        );
+
+        render(<WalletCardsCarousel />, { wrapper });
+
+        const btn1 = screen.queryByText(/Transfer/i);
+        const btn2 = screen.queryByText(/Transactions/i);
+        const btn3 = screen.queryByText(/Reset balance/i);
+
+        expect(btn1).toBeInTheDocument();
+        expect(btn2).toBeInTheDocument();
+        expect(btn3).toBeInTheDocument();
+    });
+});

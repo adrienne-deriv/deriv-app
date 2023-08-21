@@ -4,12 +4,13 @@ import { useStore, observer } from '@deriv/stores';
 import { useCashierStore } from '../../../stores/useCashierStores';
 import './real.scss';
 
-const Real = observer(() => {
+const Real = observer(({ is_appstore = false }: { is_appstore?: boolean }) => {
     const { ui } = useStore();
     const { is_dark_mode_on } = ui;
     const { iframe, general_store } = useCashierStore();
     const { clearIframe, iframe_height, iframe_url, checkIframeLoaded, setContainerHeight } = iframe;
     const { is_loading } = general_store;
+
     const should_show_loader = is_loading || !iframe_height;
 
     React.useEffect(() => {
@@ -24,7 +25,21 @@ const Real = observer(() => {
         checkIframeLoaded();
     }, [checkIframeLoaded, is_dark_mode_on, setContainerHeight]);
 
-    return (
+    return is_appstore ? (
+        <React.Fragment>
+            {should_show_loader && <Loading is_fullscreen={false} />}
+            {iframe_url && (
+                <iframe
+                    className='cashier__content'
+                    src={`${iframe_url}&DarkMode=${is_dark_mode_on ? 'on' : 'off'}`}
+                    frameBorder='0'
+                    scrolling='auto'
+                    style={{ display: should_show_loader ? 'none' : 'block' }}
+                    data-testid='dt_doughflow_section'
+                />
+            )}
+        </React.Fragment>
+    ) : (
         <div className='cashier__wrapper real'>
             {should_show_loader && <Loading className='real__loader' />}
             {iframe_url && (

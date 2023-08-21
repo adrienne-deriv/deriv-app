@@ -10,6 +10,8 @@ import PlatformLoader from 'Components/pre-loader/platform-loader';
 import GetMoreAccounts from 'Components/get-more-accounts';
 import { Actions } from 'Components/containers/trading-app-card-actions';
 import { getHasDivider } from 'Constants/utils';
+import { useWalletMigration } from '@deriv/hooks';
+import { useStores } from 'Stores/index';
 import { AvailableAccount, TDetailsOfEachMT5Loginid } from 'Types';
 import './cfds-listing.scss';
 
@@ -52,9 +54,15 @@ const CFDsListing = observer(() => {
         CFDs_restricted_countries,
         financial_restricted_countries,
     } = traders_hub;
+    const { is_in_progress } = useWalletMigration();
 
     const { toggleCompareAccountsModal, setAccountType } = cfd;
-    const { is_landing_company_loaded, real_account_creation_unlock_date, account_status } = client;
+    const {
+        is_landing_company_loaded,
+        real_account_creation_unlock_date,
+        account_status,
+        setWalletsMigrationInProgressPopup,
+    } = client;
     const { setAppstorePlatform } = common;
     const { openDerivRealAccountNeededModal, setShouldShowCooldownModal } = ui;
     const has_no_real_account = !has_any_real_account;
@@ -146,6 +154,11 @@ const CFDsListing = observer(() => {
         return null;
     };
 
+    const compareAccountsModalHandle = () => {
+        if (is_in_progress) setWalletsMigrationInProgressPopup(true);
+        else toggleCompareAccountsModal();
+    };
+
     return (
         <ListingContainer
             title={
@@ -154,7 +167,7 @@ const CFDsListing = observer(() => {
                         <Text size='sm' line_height='m' weight='bold' color='prominent'>
                             {localize('CFDs')}
                         </Text>
-                        <div className='cfd-accounts__compare-table-title' onClick={toggleCompareAccountsModal}>
+                        <div className='cfd-accounts__compare-table-title' onClick={compareAccountsModalHandle}>
                             <Text key={0} color='red' size='xxs' weight='bold' styles={{ marginLeft: '1rem' }}>
                                 <Localize i18n_default_text={accounts_sub_text} />
                             </Text>
@@ -174,7 +187,7 @@ const CFDsListing = observer(() => {
             }
         >
             {isMobile() && (
-                <div className='cfd-accounts__compare-table-title' onClick={toggleCompareAccountsModal}>
+                <div className='cfd-accounts__compare-table-title' onClick={compareAccountsModalHandle}>
                     <Text size='xs' color='red' weight='bold' line_height='s'>
                         <Localize i18n_default_text={accounts_sub_text} />
                     </Text>
@@ -195,8 +208,8 @@ const CFDsListing = observer(() => {
                         const has_mt5_account_status =
                             existing_account.status || is_idv_revoked
                                 ? getMT5AccountAuthStatus(
-                                      existing_account.status,
-                                      existing_account?.landing_company_short
+                                      existing_account.status ?? '',
+                                      existing_account?.short_code_and_region?.toLowerCase()
                                   )
                                 : null;
 
@@ -253,10 +266,15 @@ const CFDsListing = observer(() => {
                     })}
                     {can_get_more_cfd_mt5_accounts && (
                         <GetMoreAccounts
-                            onClick={toggleAccountTypeModalVisibility}
+                            onClick={
+                                is_in_progress
+                                    ? () => setWalletsMigrationInProgressPopup(true)
+                                    : toggleAccountTypeModalVisibility
+                            }
                             icon='IcAppstoreGetMoreAccounts'
                             title={localize('Get more')}
                             description={localize('Get more Deriv MT5 account with different type and jurisdiction.')}
+                            is_disabled={is_in_progress}
                         />
                     )}
                 </React.Fragment>
