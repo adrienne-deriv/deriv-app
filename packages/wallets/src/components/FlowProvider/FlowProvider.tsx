@@ -9,7 +9,7 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { Formik, FormikErrors, FormikValues } from 'formik';
+import { FieldMetaProps, Formik, FormikErrors, FormikValues } from 'formik';
 import * as Yup from 'yup';
 
 export type TFlowProviderContext<T> = {
@@ -17,7 +17,7 @@ export type TFlowProviderContext<T> = {
     currentScreenId: keyof T;
     errors: FormikErrors<FormikValues>;
     formValues: FormikValues;
-    isValid: boolean;
+    getFieldMeta: <Value>(name: string) => FieldMetaProps<Value>;
     setFormValues: (
         field: string,
         value: unknown,
@@ -106,14 +106,14 @@ function FlowProvider<T extends TWalletScreens>({
             validateOnChange
             validationSchema={validationSchema}
         >
-            {({ errors, isValid, setFieldValue, values }) => {
+            {({ errors, getFieldMeta, setFieldValue, values }) => {
                 return (
                     <FlowProvider
                         value={{
                             ...context,
                             errors,
                             formValues: values,
-                            isValid,
+                            getFieldMeta,
                             setFormValues: setFieldValue,
                         }}
                     >
@@ -121,7 +121,7 @@ function FlowProvider<T extends TWalletScreens>({
                             ...context,
                             errors,
                             formValues: values,
-                            isValid,
+                            getFieldMeta,
                             setFormValues: setFieldValue,
                         })}
                     </FlowProvider>

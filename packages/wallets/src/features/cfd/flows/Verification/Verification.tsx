@@ -94,10 +94,13 @@ const Verification: FC<TVerificationProps> = ({ selectedJurisdiction }) => {
         isSuccessPOIStatus,
     ]);
 
-    const isNextDisabled = ({ currentScreenId, isValid }: TFlowProviderContext<typeof screens>) => {
+    const isNextDisabled = ({ currentScreenId, errors }: TFlowProviderContext<typeof screens>) => {
+        const isVerified = (...fields: string[]) => {
+            return fields.every(field => !errors[field]);
+        };
         switch (currentScreenId) {
             case 'idvScreen':
-                return !isValid;
+                return !isVerified('dateOfBirth', 'documentNumber', 'firstName', 'lastName');
             default:
                 return false;
         }
