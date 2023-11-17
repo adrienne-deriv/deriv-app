@@ -15,6 +15,7 @@ export interface WalletTextFieldProps extends ComponentProps<'input'>, HelperMes
 
 const WalletTextField: FC<WalletTextFieldProps> = ({
     defaultValue = '',
+    errorMessage,
     isInvalid = false,
     label,
     maxLength,
@@ -39,7 +40,11 @@ const WalletTextField: FC<WalletTextFieldProps> = ({
                 'wallets-textfield--error': isInvalid,
             })}
         >
-            <div className='wallets-textfield__box'>
+            <div
+                className={classNames('wallets-textfield__box', {
+                    'wallets-textfield__box--error': isInvalid,
+                })}
+            >
                 <input
                     className='wallets-textfield__field'
                     id={name}
@@ -59,7 +64,17 @@ const WalletTextField: FC<WalletTextFieldProps> = ({
                 )}
             </div>
             <div className='wallets-textfield__message-container'>
-                {showMessage && <HelperMessage inputValue={value} maxLength={maxLength} message={message} />}
+                {showMessage && !isInvalid && (
+                    <HelperMessage inputValue={value} maxLength={maxLength} message={message} />
+                )}
+                {errorMessage && isInvalid && (
+                    <HelperMessage
+                        inputValue={value}
+                        isError={isInvalid}
+                        maxLength={maxLength}
+                        message={errorMessage as string}
+                    />
+                )}
             </div>
         </div>
     );

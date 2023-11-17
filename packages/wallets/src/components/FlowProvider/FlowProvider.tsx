@@ -17,6 +17,7 @@ export type TFlowProviderContext<T> = {
     currentScreenId: keyof T;
     errors: FormikErrors<FormikValues>;
     formValues: FormikValues;
+    isValid: boolean;
     setFormValues: (
         field: string,
         value: unknown,
@@ -105,13 +106,14 @@ function FlowProvider<T extends TWalletScreens>({
             validateOnChange
             validationSchema={validationSchema}
         >
-            {({ errors, setFieldValue, values }) => {
+            {({ errors, isValid, setFieldValue, values }) => {
                 return (
                     <FlowProvider
                         value={{
                             ...context,
                             errors,
                             formValues: values,
+                            isValid,
                             setFormValues: setFieldValue,
                         }}
                     >
@@ -119,6 +121,7 @@ function FlowProvider<T extends TWalletScreens>({
                             ...context,
                             errors,
                             formValues: values,
+                            isValid,
                             setFormValues: setFieldValue,
                         })}
                     </FlowProvider>

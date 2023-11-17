@@ -94,15 +94,10 @@ const Verification: FC<TVerificationProps> = ({ selectedJurisdiction }) => {
         isSuccessPOIStatus,
     ]);
 
-    const isNextDisabled = ({ currentScreenId, formValues }: TFlowProviderContext<typeof screens>) => {
+    const isNextDisabled = ({ currentScreenId, isValid }: TFlowProviderContext<typeof screens>) => {
         switch (currentScreenId) {
             case 'idvScreen':
-                return (
-                    !formValues.documentNumber ||
-                    !formValues.firstName ||
-                    !formValues.lastName ||
-                    !formValues.dateOfBirth
-                );
+                return !isValid;
             default:
                 return false;
         }
@@ -128,11 +123,17 @@ const Verification: FC<TVerificationProps> = ({ selectedJurisdiction }) => {
         }
     };
 
-    // NOTE: These are test validations, add the correct validators here for different screens
+    // NOTE: These are test validations for input fields, add the correct validators here for different screens
     const validationSchema = Yup.object().shape({
         dateOfBirth: Yup.date().required(),
-        documentNumber: Yup.string().min(12, 'document number should have minimum 12 characters').required(),
-        firstName: Yup.string().min(1).max(5).required(),
+        documentNumber: Yup.string()
+            .min(16, 'Please enter the correct format. Example: 1234567890123456')
+            .matches(/^[aA-zZ\s]+$/, 'Letters, spaces, periods, hyphens, apostrophes only.')
+            .required(),
+        firstName: Yup.string()
+            .min(1)
+            .max(10, 'First name can only have at max 10 characters')
+            .required('This field is required'),
         lastName: Yup.string().min(1).max(20).required(),
     });
 
