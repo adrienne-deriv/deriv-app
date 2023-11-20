@@ -5,26 +5,11 @@ import { ModalStepWrapper, WalletButton } from '../../../../components/Base';
 import { FlowProvider, TFlowProviderContext } from '../../../../components/FlowProvider';
 import { Loader } from '../../../../components/Loader';
 import { useModal } from '../../../../components/ModalProvider';
-import { THooks } from '../../../../types';
-import { ResubmitPOA } from '../../../accounts/screens';
+import { THooks, TMarketTypes, TPlatforms } from '../../../../types';
+import { ManualDocumentUpload, PersonalDetails, ResubmitPOA } from '../../../accounts/screens';
 import { IDVDocumentUpload } from '../../../accounts/screens/IDVDocumentUpload';
+import { MT5PasswordModal } from '../../modals';
 import { Onfido } from '../../screens';
-
-const Manual = () => {
-    return (
-        <div style={{ fontSize: 60, height: 400, width: 600 }}>
-            <h1>Manual screen</h1>
-        </div>
-    );
-};
-
-const PersonalDetails = () => {
-    return (
-        <div style={{ fontSize: 60, height: 400, width: 600 }}>
-            <h1>Personal details screen</h1>
-        </div>
-    );
-};
 
 const Loading = () => {
     return (
@@ -42,7 +27,7 @@ const Password = () => {
 const screens = {
     idvScreen: <IDVDocumentUpload />,
     loadingScreen: <Loading />,
-    manualScreen: <Manual />,
+    manualScreen: <ManualDocumentUpload />,
     onfidoScreen: <Onfido />,
     passwordScreen: <Password />,
     personalDetailsScreen: <PersonalDetails />,
@@ -50,14 +35,16 @@ const screens = {
 };
 
 type TVerificationProps = {
+    marketType: TMarketTypes.All;
+    platform: TPlatforms.All;
     selectedJurisdiction: THooks.AvailableMT5Accounts['shortcode'];
 };
 
-const Verification: FC<TVerificationProps> = ({ selectedJurisdiction }) => {
+const Verification: FC<TVerificationProps> = ({ marketType, platform, selectedJurisdiction }) => {
     const { data: poiStatus, isSuccess: isSuccessPOIStatus } = usePOI();
     const { data: poaStatus, isSuccess: isSuccessPOAStatus } = usePOA();
     const { data: authenticationData } = useAuthentication();
-    const { hide } = useModal();
+    const { hide, show } = useModal();
 
     const isLoading = useMemo(() => {
         return !isSuccessPOIStatus || !isSuccessPOAStatus;
@@ -67,9 +54,9 @@ const Verification: FC<TVerificationProps> = ({ selectedJurisdiction }) => {
     const needPersonalDetails = true;
 
     const initialScreenId: keyof typeof screens = useMemo(() => {
-        const service = (poiStatus?.current?.service || 'manual') as keyof THooks.POI['services'];
+        const service = poiStatus?.current?.service as keyof THooks.POI['services'];
 
-        if (poiStatus?.services) {
+        if (isSuccessPOIStatus && poiStatus?.services) {
             const serviceStatus = poiStatus.services?.[service];
 
             if (!isSuccessPOIStatus) return 'loadingScreen';
@@ -80,7 +67,7 @@ const Verification: FC<TVerificationProps> = ({ selectedJurisdiction }) => {
             }
             if (service === 'idv') return 'idvScreen';
             if (service === 'onfido') return 'onfidoScreen';
-            return 'manualScreen';
+            if (service === 'manual') return 'manualScreen';
         }
         return 'loadingScreen';
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,7 +107,7 @@ const Verification: FC<TVerificationProps> = ({ selectedJurisdiction }) => {
                 switchScreen('personalDetailsScreen');
             }
         } else if (currentScreenId === 'personalDetailsScreen') {
-            switchScreen('passwordScreen');
+            show(<MT5PasswordModal marketType={marketType} platform={platform} />);
         } else {
             hide();
         }

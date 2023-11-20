@@ -5,11 +5,11 @@ import { useModal } from '../../../../components/ModalProvider';
 import useDevice from '../../../../hooks/useDevice';
 import { DynamicLeverageContext } from '../../components/DynamicLeverageContext';
 import { MarketTypeDetails } from '../../constants';
+import { Verification, Verification } from '../../flows/Verification';
 import { DynamicLeverageScreen, DynamicLeverageTitle } from '../../screens/DynamicLeverage';
 import { JurisdictionScreen } from '../../screens/Jurisdiction';
 import { MT5PasswordModal } from '..';
 import './JurisdictionModal.scss';
-import { Verification } from '../../flows/Verification';
 
 const JurisdictionModal = () => {
     const [selectedJurisdiction, setSelectedJurisdiction] = useState('');
@@ -41,7 +41,13 @@ const JurisdictionModal = () => {
                       if (selectedJurisdiction === 'svg') {
                           show(<MT5PasswordModal marketType={marketType} platform={platform} />);
                       } else {
-                          show(<Verification selectedJurisdiction={selectedJurisdiction} />);
+                          show(
+                              <Verification
+                                  marketType={marketType}
+                                  platform={platform}
+                                  selectedJurisdiction={selectedJurisdiction}
+                              />
+                          );
                       }
                   }}
                   text='Next'

@@ -2,14 +2,12 @@ import { useMemo } from 'react';
 import useAuthentication from './useAuthentication';
 import useResidenceList from './useResidenceList';
 import useSettings from './useSettings';
-import useAccountStatus from './useAccountStatus';
 
 /** A custom hook to get the proof of identity verification info of the current user. */
 const usePOI = () => {
-    const { data: authentication_data, ...rest } = useAuthentication();
-    const { data: residence_list_data } = useResidenceList();
-    const { data: get_settings_data } = useSettings();
-    const { data: account_status_data } = useAccountStatus();
+    const { data: authentication_data, isSuccess: isAuthenticationSuccess, ...rest } = useAuthentication();
+    const { data: residence_list_data, isSuccess: isResidenceListSuccess } = useResidenceList();
+    const { data: get_settings_data, isSuccess: isSettingsSuccess } = useSettings();
 
     const previous_service = useMemo(() => {
         const latest_poi_attempt = authentication_data?.attempts?.latest;
@@ -44,10 +42,14 @@ const usePOI = () => {
 
     /**
      * @description Get the current step based on a few checks. Returns configuration for document validation as well.
+     *
+     * For Nigeria, the priority order for the documents are: IDV -> Manual (On select NFIC) -> Onfido
+     * For Ghana,
      */
     const current_poi = useMemo(() => {
         const user_country_code = get_settings_data?.citizen || get_settings_data?.country_code;
         const matching_residence_data = residence_list_data?.find(r => r.value === user_country_code);
+        const is_country_nigeria = user_country_code?.toLowerCase() === 'ng';
         const is_idv_supported = matching_residence_data?.identity?.services?.idv?.is_country_supported;
         const is_onfido_supported = matching_residence_data?.identity?.services?.onfido?.documents_supported;
         const services = authentication_data?.identity?.services;
@@ -55,19 +57,25 @@ const usePOI = () => {
         const onfido_submission_left = services?.onfido?.submissions_left ?? 0;
         if (is_idv_supported && idv_submission_left && !authentication_data?.is_idv_disallowed) {
             return {
+                country_code: user_country_code,
                 service: 'idv',
+                status: services?.idv?.status,
                 submission_left: idv_submission_left,
                 document_supported: matching_residence_data?.identity?.services?.idv?.documents_supported,
             };
         } else if (is_onfido_supported && onfido_submission_left) {
             return {
+                country_code: user_country_code,
                 service: 'onfido',
+                status: services?.onfido?.status,
                 submission_left: onfido_submission_left,
                 document_supported: matching_residence_data?.identity?.services?.onfido?.documents_supported,
             };
         }
         return {
+            country_code: user_country_code,
             service: 'manual',
+            status: services?.manual?.status,
         };
     }, [
         get_settings_data?.citizen,
@@ -89,6 +97,7 @@ const usePOI = () => {
 
     return {
         data: modified_verification_data,
+        isSuccess: isAuthenticationSuccess && isResidenceListSuccess && isSettingsSuccess,
         ...rest,
     };
 };
