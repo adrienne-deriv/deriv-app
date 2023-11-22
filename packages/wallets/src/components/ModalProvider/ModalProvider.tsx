@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useOnClickOutside } from 'usehooks-ts';
 import useDevice from '../../hooks/useDevice';
 import { TMarketTypes, TPlatforms } from '../../types';
+import './ModalProvider.scss';
 
 type TModalState = {
     marketType?: TMarketTypes.All;
@@ -59,11 +60,28 @@ const ModalProvider = ({ children }: React.PropsWithChildren<unknown>) => {
             ...modalOptions,
             ...options,
         });
+
+        const modalContainer = document.getElementById('wallets_modal_provider');
+        if (modalContainer) {
+            modalContainer.style.animationName = 'none';
+
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    modalContainer.style.animationName = '';
+                }, 0);
+            });
+        }
     };
 
     useEffect(() => {
         if (!rootHeaderRef.current) {
             rootHeaderRef.current = document.getElementById('wallets_modal_show_header_root');
+        }
+        const modalContainer = document.getElementById('wallets-modal');
+        if (modalContainer) {
+            modalContainer.addEventListener('animationend', () => {
+                modalContainer.style.animationPlayState = 'paused';
+            });
         }
     }, []);
 
@@ -99,7 +117,12 @@ const ModalProvider = ({ children }: React.PropsWithChildren<unknown>) => {
             {children}
             {modalRootRef?.current &&
                 content &&
-                createPortal(<div ref={modalRef}>{content}</div>, modalRootRef.current)}
+                createPortal(
+                    <div className='wallets-modal wallets-modal--mount' id='wallets_modal_provider' ref={modalRef}>
+                        {content}
+                    </div>,
+                    modalRootRef.current
+                )}
         </ModalContext.Provider>
     );
 };

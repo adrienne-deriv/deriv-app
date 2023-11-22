@@ -76,6 +76,16 @@ function FlowProvider<T extends TWalletScreens>({
 }: TFlowProviderProps<T>) {
     const [currentScreenId, setCurrentScreenId] = useState<keyof T>(initialScreenId || Object.keys(screens)[0]);
     const switchScreen = (screenId: keyof T) => {
+        const modalContainer = document.getElementById('wallets_modal_provider');
+        if (modalContainer) {
+            modalContainer.style.animationName = 'none';
+
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    modalContainer.style.animationName = '';
+                }, 0);
+            });
+        }
         setCurrentScreenId(screenId);
     };
 
