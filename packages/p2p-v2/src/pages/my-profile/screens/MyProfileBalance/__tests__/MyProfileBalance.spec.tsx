@@ -32,8 +32,8 @@ const mockUseActiveAccount = {
     isLoading: false,
 };
 
-jest.mock('../../../../../hooks', () => ({
-    ...jest.requireActual('../../../../../hooks'),
+jest.mock('@/hooks', () => ({
+    ...jest.requireActual('@/hooks'),
     useAdvertiserStats: jest.fn(() => mockUseAdvertiserStats),
 }));
 
