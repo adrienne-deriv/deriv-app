@@ -5,7 +5,7 @@ import { Button } from '@deriv/components';
 import { useOauth2 } from '@deriv/hooks';
 import { redirectToLogin } from '@deriv/shared';
 import { getLanguage, localize } from '@deriv/translations';
-import { requestOidcAuthentication } from '@deriv-com/auth-client';
+import { requestOidcAuthentication } from 'adrienne-auth-client';
 
 const LoginButton = ({ className }) => {
     const { isOAuth2Enabled } = useOauth2({});

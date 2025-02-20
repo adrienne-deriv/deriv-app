@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { requestOidcAuthentication } from '@deriv-com/auth-client';
+import { requestOidcAuthentication, requestOidcSilentAuthentication } from 'adrienne-auth-client';
 
 /**
  * Handles silent login and single logout logic for OAuth2.
@@ -49,10 +49,10 @@ const useSilentLoginAndLogout = ({
                 false
             );
 
-            // requestOidcSilentAuthentication({
-            //     redirectSilentCallbackUri: `${window.location.origin}/silent-callback.html`,
-            //     redirectCallbackUri: `${window.location.origin}/callback`,
-            // });
+            requestOidcSilentAuthentication({
+                redirectSilentCallbackUri: `${window.location.origin}/silent-callback.html`,
+                redirectCallbackUri: `${window.location.origin}/callback`,
+            });
         }
     }, [isOAuth2Enabled]);
 };
