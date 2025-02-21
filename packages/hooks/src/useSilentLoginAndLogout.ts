@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { requestOidcAuthentication, requestOidcSilentAuthentication } from 'adrienne-auth-client';
+import { requestOidcAuthentication, requestOidcSilentAuthentication } from '@deriv-com/auth-client';
 
 /**
  * Handles silent login and single logout logic for OAuth2.
